@@ -632,14 +632,14 @@ function render() {
 
   state.weeks.forEach((monKey, wi) => {
     const mon = parseKey(monKey);
-    const fri = addDays(monKey, 5);
+    const fri = addDays(monKey, 4);
     const wLabel = `Semaine ${wi + 1}`;
     const wRange = `${fmtDisplay(mon)} – ${fmtDisplay(fri)} ${mon.getFullYear()}`;
 
     // Count essais for this week
     let weekCount = 0;
     for (let i = 0; i < 5; i++) {
-      const k = fmtKey(addDays(monKey, i + 1));
+      const k = fmtKey(addDays(monKey, i));
       weekCount += (state.essais[k] || []).length;
     }
 
@@ -648,7 +648,7 @@ function render() {
 
     let daysHtml = '';
     for (let i = 0; i < 5; i++) {
-      const d = addDays(monKey, i + 1);
+      const d = addDays(monKey, i);
       const k = fmtKey(d);
       const todayCls = isToday(k) ? ' is-today' : '';
       const list = state.essais[k] || [];
