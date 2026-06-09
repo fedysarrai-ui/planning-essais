@@ -68,16 +68,16 @@
 
   /* HALF-DAY SECTIONS */
   .day-body { display: flex; flex-direction: column; flex: 1; }
-  .half-section { flex: 1; display: flex; flex-direction: column; border-bottom: 1px dashed var(--border); }
+  .half-section { flex: 1; display: flex; flex-direction: column; border-bottom: 2px solid var(--border2); }
   .half-section:last-child { border-bottom: none; }
-  .half-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); padding: 5px 8px 2px; }
+  .half-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text2); padding: 5px 8px 2px; }
   .essais-area { flex: 1; padding: 3px 6px 4px; display: flex; flex-direction: column; gap: 4px; min-height: 48px; }
 
   /* DROP ZONE */
   .essais-area.drag-over { background: var(--accent-light); border-radius: 4px; outline: 2px dashed var(--accent-mid); outline-offset: -2px; }
 
   /* CHIPS */
-  .essai-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; cursor: grab; display: flex; align-items: flex-start; gap: 5px; transition: all 0.12s; user-select: none; }
+  .essai-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; cursor: grab; user-select: none; display: flex; align-items: flex-start; gap: 5px; transition: all 0.12s; user-select: none; }
   .essai-chip:hover { background: var(--accent-light); border-color: #FBCDB8; box-shadow: 0 2px 8px rgba(242,101,53,0.1); }
   .essai-chip.dragging { opacity: 0.4; cursor: grabbing; }
   .essai-chip.has-group { border-left-width: 3px; }
@@ -93,7 +93,7 @@
   /* MODAL */
   .overlay { display: none; position: fixed; inset: 0; background: rgba(20,20,18,0.45); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
   .overlay.open { display: flex; }
-  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow-modal); width: 460px; max-width: calc(100vw - 32px); animation: modal-in 0.18s ease; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow-modal); width: 560px; max-width: calc(100vw - 32px); max-height: 90vh; overflow-y: auto; animation: modal-in 0.18s ease; }
   @keyframes modal-in { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
   .modal-header { padding: 20px 24px 0; display: flex; align-items: center; justify-content: space-between; }
   .modal-header-left { display: flex; flex-direction: column; gap: 2px; }
@@ -135,6 +135,15 @@
   .pw-submit:hover { background: var(--accent-mid); }
   .pw-error { font-size: 12px; color: var(--danger); text-align: center; min-height: 16px; }
   @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+  /* NOTES */
+  .note-chip { background: #FFFBEB; border: 1px solid #F0D080; border-left: 3px solid #E8A020; border-radius: var(--radius-sm); padding: 6px 8px; cursor: pointer; display: flex; align-items: flex-start; gap: 5px; transition: all 0.12s; user-select: none; }
+  .note-chip:hover { background: #FFF5CC; box-shadow: 0 2px 8px rgba(232,160,32,0.15); }
+  .note-chip-icon { font-size: 11px; flex-shrink: 0; margin-top: 1px; color: #E8A020; }
+  .note-chip-title { font-size: 11px; font-weight: 400; color: #7A5800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; font-style: italic; }
+  .add-note-btn { display: flex; align-items: center; gap: 5px; padding: 5px 8px; margin: 0 6px 6px; background: none; border: 1px dashed #F0D080; border-radius: var(--radius-sm); color: #C89010; font-size: 11px; width: calc(100% - 12px); transition: all 0.15s; }
+  .add-note-btn:hover { border-color: #E8A020; color: #A06800; background: #FFFBEB; }
+  .add-note-btn svg { width: 11px; height: 11px; flex-shrink: 0; }
 
   /* PRINT */
   @media print { .nav-actions,.toolbar,.add-btn,.week-delete-btn{display:none!important} .week-block{break-inside:avoid;box-shadow:none} body{background:white} }
@@ -199,35 +208,57 @@
   <div class="modal">
     <div class="modal-header">
       <div class="modal-header-left">
-        <span class="modal-h" id="modal-h">Nouvel essai</span>
         <span class="modal-date" id="modal-date"></span>
       </div>
       <button class="modal-close" onclick="closeModal()">×</button>
     </div>
+    <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin:0 24px;">
+      <button id="tab-essai" onclick="switchTab('essai')" style="padding:10px 18px;font-size:13px;font-weight:600;background:none;border:none;border-bottom:2px solid var(--accent);color:var(--accent);cursor:pointer;font-family:var(--font);">
+        Essai
+      </button>
+      <button id="tab-note" onclick="switchTab('note')" style="padding:10px 18px;font-size:13px;font-weight:500;background:none;border:none;border-bottom:2px solid transparent;color:var(--text3);cursor:pointer;font-family:var(--font);">
+        Note
+      </button>
+    </div>
     <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label" for="inp-title">Titre de l'essai</label>
-        <input class="form-input" id="inp-title" type="text" placeholder="Ex : Essai frigo B — étagère haute" autocomplete="off"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Groupe (essai multi-jours)</label>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;" id="group-selector">
-          <button type="button" class="btn" id="btn-no-group" onclick="selectGroup(null)" style="font-size:12px;padding:5px 10px;">Aucun</button>
-          <div id="group-pills" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
-          <button type="button" class="btn" id="btn-new-group" onclick="createGroup()" style="font-size:12px;padding:5px 10px;">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Nouveau groupe
-          </button>
+      <!-- TAB ESSAI -->
+      <div id="tab-content-essai">
+        <div class="form-group">
+          <label class="form-label" for="inp-title">Titre de l'essai</label>
+          <input class="form-input" id="inp-title" type="text" placeholder="Ex : Essai frigo B — étagère haute" autocomplete="off"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Groupe (essai multi-jours)</label>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;" id="group-selector">
+            <button type="button" class="btn" id="btn-no-group" onclick="selectGroup(null)" style="font-size:12px;padding:5px 10px;">Aucun</button>
+            <div id="group-pills" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+            <button type="button" class="btn" id="btn-new-group" onclick="createGroup()" style="font-size:12px;padding:5px 10px;">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Nouveau groupe
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="inp-desc">Description détaillée</label>
+          <textarea class="form-textarea" id="inp-desc" placeholder="Protocole, durée, matériel, conditions, observations attendues…"></textarea>
+          <span class="form-hint">Ctrl+Entrée pour enregistrer rapidement</span>
         </div>
       </div>
-      <div class="form-group">
-        <label class="form-label" for="inp-desc">Description détaillée</label>
-        <textarea class="form-textarea" id="inp-desc" placeholder="Protocole, durée, matériel, conditions, observations attendues…"></textarea>
-        <span class="form-hint">Ctrl+Entrée pour enregistrer rapidement</span>
+      <!-- TAB NOTE -->
+      <div id="tab-content-note" style="display:none;">
+        <div class="form-group">
+          <label class="form-label" for="inp-note-inline">Note</label>
+          <textarea class="form-textarea" id="inp-note-inline" placeholder="Ex : Préparer les frigos pour l'essai de demain…" style="min-height:100px;border-color:#F0D080;background:#FFFBEB;"></textarea>
+          <span class="form-hint">Ctrl+Entrée pour enregistrer rapidement</span>
+        </div>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-danger" id="btn-del" onclick="deleteEssai()" style="display:none;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        Supprimer
+      </button>
+      <button class="btn btn-danger" id="note-btn-inline-del" onclick="deleteNoteInline()" style="display:none;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
         Supprimer
       </button>
@@ -237,7 +268,40 @@
       </button>
       <div class="modal-footer-right">
         <button class="btn" onclick="closeModal()">Annuler</button>
-        <button class="btn btn-primary" onclick="saveEssai()">
+        <button class="btn btn-primary" id="btn-save-unified" onclick="saveUnified()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Enregistrer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Note Modal -->
+<div class="overlay" id="note-overlay" onclick="noteOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <span class="modal-h" id="note-modal-h">Nouvelle note</span>
+        <span class="modal-date" id="note-modal-date"></span>
+      </div>
+      <button class="modal-close" onclick="closeNoteModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="inp-note">Note</label>
+        <textarea class="form-textarea" id="inp-note" placeholder="Ex : Préparer les frigos pour l'essai de demain…" style="min-height:80px;border-color:#F0D080;background:#FFFBEB;"></textarea>
+        <span class="form-hint">Ctrl+Entrée pour enregistrer</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger" id="note-btn-del" onclick="deleteNote()" style="display:none;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        Supprimer
+      </button>
+      <div class="modal-footer-right">
+        <button class="btn" onclick="closeNoteModal()">Annuler</button>
+        <button class="btn" onclick="saveNote()" style="background:#E8A020;color:#fff;border-color:#E8A020;">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           Enregistrer
         </button>
@@ -314,13 +378,23 @@ function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify({ action:'save', data: state }) }).catch(()=>{});
 }
+function cleanState(s) {
+  // Supprime les entrées null/undefined dans tous les slots d'essais
+  if (s.essais) {
+    for (const k of Object.keys(s.essais)) {
+      s.essais[k] = (s.essais[k] || []).filter(e => e !== null && e !== undefined);
+    }
+  }
+  return s;
+}
+
 function loadState() {
   try {
     const s = localStorage.getItem(STORAGE_KEY);
-    if (s) { state = migrateState(JSON.parse(s)); return; }
+    if (s) { state = cleanState(migrateState(JSON.parse(s))); return; }
   } catch(e) {}
   // First load: inject seed data (migrated)
-  state = migrateState(JSON.parse(JSON.stringify(SEED_DATA)));
+  state = cleanState(migrateState(JSON.parse(JSON.stringify(SEED_DATA))));
   saveState();
 }
 async function syncFromRemote() {
@@ -387,7 +461,7 @@ function render() {
             <div class="half-section">
               <div class="half-label">Matin</div>
               ${renderSlot(amKey)}
-              <button class="add-btn" onclick="openNew('${amKey}')">
+              <button class="add-btn" onclick="openAddMenu('${amKey}')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Ajouter
               </button>
@@ -395,7 +469,7 @@ function render() {
             <div class="half-section">
               <div class="half-label">Après-midi</div>
               ${renderSlot(pmKey)}
-              <button class="add-btn" onclick="openNew('${pmKey}')">
+              <button class="add-btn" onclick="openAddMenu('${pmKey}')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Ajouter
               </button>
@@ -421,11 +495,15 @@ function render() {
     container.appendChild(block);
   });
 
-  setupDragDrop();
 }
 
 function renderSlot(sk) {
-  const list = state.essais[sk] || [];
+  const list = (state.essais[sk] || []).filter(e => e !== null && e !== undefined);
+  state.essais[sk] = list;
+  const nsk = 'note:' + sk;
+  const notes = (state.essais[nsk] || []).filter(n => n !== null && n !== undefined);
+  state.essais[nsk] = notes;
+
   const chips = list.map((e, ei) => {
     const grp = e.groupId ? (state.groups||[]).find(g => g.id===e.groupId) : null;
     const col = grp ? GROUP_COLORS[grp.colorIdx % GROUP_COLORS.length] : null;
@@ -433,62 +511,86 @@ function renderSlot(sk) {
     const badgeStyle = col ? `background:${col.border};color:#fff;` : '';
     const badge = grp ? `<span class="group-badge" style="${badgeStyle}">#${esc(grp.label)}</span>` : '<div class="essai-chip-dot"></div>';
     return `<div class="essai-chip${grp?' has-group':''}" 
-      draggable="true" 
-      data-slot="${sk}" data-idx="${ei}"
-      onclick="openEdit('${sk}',${ei})" 
+      draggable="true"
+      ondragstart="onChipDragStart(event,'${sk}',${ei})"
+      ondragend="onChipDragEnd(event)"
+      onclick="onChipClick(event,'${sk}',${ei})"
       title="${esc(e.title||'Sans titre')}" 
       style="${chipStyle}">
       ${badge}
       <span class="essai-chip-title${!e.title?' essai-chip-empty':''}">${e.title?esc(e.title):'Sans titre'}</span>
     </div>`;
   }).join('');
-  return `<div class="essais-area" data-slot="${sk}">${chips}</div>`;
+
+  const noteChips = notes.map((n, ni) => `
+    <div class="note-chip" onclick="openNote('${nsk}',${ni})" title="${esc(n.text||'')}">
+      <span class="note-chip-icon">✎</span>
+      <span class="note-chip-title">${n.text ? esc(n.text) : '<em>Note vide</em>'}</span>
+    </div>`).join('');
+
+  return `<div class="essais-area" data-slot="${sk}"
+    ondragover="onZoneDragOver(event)"
+    ondragleave="onZoneDragLeave(event)"
+    ondrop="onZoneDrop(event,'${sk}')"
+  >${chips}${noteChips}</div>`;
 }
 
 // ── DRAG & DROP ──
-let dragSrc = null; // { sk, idx }
+let dragSrc = null;
+let isDragging = false;
 
-function setupDragDrop() {
-  document.querySelectorAll('.essai-chip[draggable]').forEach(chip => {
-    chip.addEventListener('dragstart', e => {
-      dragSrc = { sk: chip.dataset.slot, idx: parseInt(chip.dataset.idx) };
-      chip.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-    });
-    chip.addEventListener('dragend', () => {
-      chip.classList.remove('dragging');
-      document.querySelectorAll('.essais-area').forEach(z => z.classList.remove('drag-over'));
-    });
-  });
+function setupDragDrop() {}
 
-  document.querySelectorAll('.essais-area').forEach(zone => {
-    zone.addEventListener('dragover', e => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      document.querySelectorAll('.essais-area').forEach(z => z.classList.remove('drag-over'));
-      zone.classList.add('drag-over');
-    });
-    zone.addEventListener('dragleave', e => {
-      if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
-    });
-    zone.addEventListener('drop', e => {
-      e.preventDefault();
-      zone.classList.remove('drag-over');
-      const targetSk = zone.dataset.slot;
-      if (!dragSrc || dragSrc.sk === targetSk) return;
-      // Move essai
-      const srcList = state.essais[dragSrc.sk] || [];
-      const [moved] = srcList.splice(dragSrc.idx, 1);
-      state.essais[dragSrc.sk] = srcList;
-      if (!state.essais[targetSk]) state.essais[targetSk] = [];
-      state.essais[targetSk].push(moved);
-      dragSrc = null;
-      saveState();
-      render();
-      showToast('Essai déplacé');
-    });
-  });
+function onChipDragStart(e, sk, idx) {
+  dragSrc = { sk, idx };
+  isDragging = true;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', sk + '|' + idx);
+  setTimeout(() => { if (e.target) e.target.style.opacity = '0.3'; }, 0);
 }
+
+function onChipDragEnd(e) {
+  isDragging = false;
+  if (e.target) e.target.style.opacity = '';
+  document.querySelectorAll('.essais-area').forEach(z => z.classList.remove('drag-over'));
+}
+
+function onChipClick(e, sk, idx) {
+  if (isDragging) return;
+  openEdit(sk, idx);
+}
+
+function onZoneDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  const zone = e.currentTarget;
+  document.querySelectorAll('.essais-area').forEach(z => z.classList.remove('drag-over'));
+  if (dragSrc && zone.dataset.slot !== dragSrc.sk) zone.classList.add('drag-over');
+}
+
+function onZoneDragLeave(e) {
+  e.currentTarget.classList.remove('drag-over');
+}
+
+function onZoneDrop(e, targetSk) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!dragSrc || dragSrc.sk === targetSk) return;
+
+  const srcList = JSON.parse(JSON.stringify(state.essais[dragSrc.sk] || []));
+  const [moved] = srcList.splice(dragSrc.idx, 1);
+  state.essais[dragSrc.sk] = srcList;
+  if (!state.essais[targetSk]) state.essais[targetSk] = [];
+  state.essais[targetSk] = JSON.parse(JSON.stringify(state.essais[targetSk]));
+  state.essais[targetSk].push(moved);
+  dragSrc = null;
+  saveState();
+  render();
+  showToast('Essai déplacé');
+}
+
+function setupDragDrop() {}
+function initDragDrop() {}
 
 // ── WEEK ACTIONS ──
 function addWeek() {
@@ -517,14 +619,18 @@ function deleteWeek(wi) {
 // ── MODAL ──
 function openNew(sk) {
   currentEdit = { sk, idx: null, groupId: null };
-  document.getElementById('modal-h').textContent = 'Nouvel essai';
+  currentNote = null;
   const { dateKey, half } = parseSlot(sk);
   document.getElementById('modal-date').textContent = fmtFull(dateKey) + ' — ' + (half==='am'?'Matin':'Après-midi');
   document.getElementById('inp-title').value = '';
   document.getElementById('inp-desc').value = '';
+  document.getElementById('inp-note-inline').value = '';
   document.getElementById('btn-del').style.display = 'none';
+  document.getElementById('note-btn-inline-del').style.display = 'none';
   document.getElementById('btn-dup').style.display = 'none';
   renderGroupSelector(null);
+  currentTab = 'essai';
+  switchTab('essai');
   document.getElementById('overlay').classList.add('open');
   setTimeout(() => document.getElementById('inp-title').focus(), 80);
 }
@@ -533,14 +639,18 @@ function openEdit(sk, idx) {
   const e = (state.essais[sk]||[])[idx];
   if (!e) return;
   currentEdit = { sk, idx, groupId: e.groupId||null };
-  document.getElementById('modal-h').textContent = "Modifier l'essai";
+  currentNote = null;
   const { dateKey, half } = parseSlot(sk);
   document.getElementById('modal-date').textContent = fmtFull(dateKey) + ' — ' + (half==='am'?'Matin':'Après-midi');
   document.getElementById('inp-title').value = e.title||'';
   document.getElementById('inp-desc').value = e.desc||'';
+  document.getElementById('inp-note-inline').value = '';
   document.getElementById('btn-del').style.display = '';
+  document.getElementById('note-btn-inline-del').style.display = 'none';
   document.getElementById('btn-dup').style.display = '';
   renderGroupSelector(e.groupId||null);
+  currentTab = 'essai';
+  switchTab('essai');
   document.getElementById('overlay').classList.add('open');
   setTimeout(() => document.getElementById('inp-title').focus(), 80);
 }
@@ -608,10 +718,132 @@ function renderGroupSelector(selectedId) {
   }).join('');
 }
 
+// ── ADD MENU & TAB SWITCHER ──
+let currentTab = 'essai'; // 'essai' or 'note'
+
+function openAddMenu(sk) {
+  // Open the unified modal in "new" mode, defaulting to essai tab
+  openNew(sk);
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  // Si on bascule sur l'onglet Note et qu'on vient d'openNew, initialiser currentNote
+  if (tab === 'note' && currentEdit && !currentNote) {
+    const nsk = 'note:' + currentEdit.sk;
+    currentNote = { nsk, idx: null };
+  }
+  // Tab buttons
+  const tE = document.getElementById('tab-essai');
+  const tN = document.getElementById('tab-note');
+  tE.style.borderBottomColor = tab==='essai' ? 'var(--accent)' : 'transparent';
+  tE.style.color = tab==='essai' ? 'var(--accent)' : 'var(--text3)';
+  tE.style.fontWeight = tab==='essai' ? '600' : '500';
+  tN.style.borderBottomColor = tab==='note' ? '#E8A020' : 'transparent';
+  tN.style.color = tab==='note' ? '#E8A020' : 'var(--text3)';
+  tN.style.fontWeight = tab==='note' ? '600' : '500';
+  // Content
+  document.getElementById('tab-content-essai').style.display = tab==='essai' ? '' : 'none';
+  document.getElementById('tab-content-note').style.display = tab==='note' ? '' : 'none';
+  // Footer buttons
+  document.getElementById('btn-del').style.display = (tab==='essai' && currentEdit && currentEdit.idx!==null) ? '' : 'none';
+  document.getElementById('note-btn-inline-del').style.display = (tab==='note' && currentNote && currentNote.idx!==null) ? '' : 'none';
+}
+
+// ── NOTES ──
+let currentNote = null; // { nsk, idx }
+
+function openNote(nsk, idx) {
+  // Called from chip click — open modal on note tab
+  const rawSk = nsk.replace('note:', '');
+  const { dateKey, half } = parseSlot(rawSk);
+  currentNote = { nsk, idx };
+  currentEdit = { sk: rawSk, idx: null, groupId: null }; // so closeModal works
+  document.getElementById('modal-date').textContent = fmtFull(dateKey) + ' — ' + (half==='am'?'Matin':'Après-midi');
+  document.getElementById('inp-title').value = '';
+  document.getElementById('inp-desc').value = '';
+  const notes = state.essais[nsk] || [];
+  document.getElementById('inp-note-inline').value = idx !== null ? (notes[idx]?.text || '') : '';
+  document.getElementById('btn-del').style.display = 'none';
+  document.getElementById('note-btn-inline-del').style.display = idx !== null ? '' : 'none';
+  document.getElementById('btn-dup').style.display = 'none';
+  renderGroupSelector(null);
+  currentTab = 'note';
+  switchTab('note');
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(() => document.getElementById('inp-note-inline').focus(), 80);
+}
+
+function saveUnified() {
+  if (currentTab === 'essai') {
+    saveEssai();
+  } else {
+    saveNoteInline();
+  }
+}
+
+function saveNoteInline() {
+  if (!currentNote) return;
+  const text = document.getElementById('inp-note-inline').value.trim();
+  const { nsk, idx } = currentNote;
+  if (!state.essais[nsk]) state.essais[nsk] = [];
+  if (idx === null) {
+    state.essais[nsk].push({ text, createdAt: new Date().toISOString() });
+  } else {
+    state.essais[nsk][idx] = { text, updatedAt: new Date().toISOString() };
+  }
+  saveState(); closeModal(); render();
+  showToast(idx === null ? 'Note ajoutée' : 'Note mise à jour');
+}
+
+function deleteNoteInline() {
+  if (!currentNote || currentNote.idx === null) return;
+  if (!confirm('Supprimer cette note ?')) return;
+  const { nsk, idx } = currentNote;
+  state.essais[nsk].splice(idx, 1);
+  saveState(); closeModal(); render();
+  showToast('Note supprimée');
+}
+
+function closeNoteModal() {
+  document.getElementById('note-overlay').classList.remove('open');
+  currentNote = null;
+}
+
+function noteOverlayClick(e) {
+  if (e.target === document.getElementById('note-overlay')) closeNoteModal();
+}
+
+function saveNote() {
+  if (!currentNote) return;
+  const text = document.getElementById('inp-note').value.trim();
+  const { nsk, idx } = currentNote;
+  if (!state.essais[nsk]) state.essais[nsk] = [];
+  if (idx === null) {
+    state.essais[nsk].push({ text, createdAt: new Date().toISOString() });
+  } else {
+    state.essais[nsk][idx] = { text, updatedAt: new Date().toISOString() };
+  }
+  saveState(); closeNoteModal(); render();
+  showToast(idx === null ? 'Note ajoutée' : 'Note mise à jour');
+}
+
+function deleteNote() {
+  if (!currentNote || currentNote.idx === null) return;
+  if (!confirm('Supprimer cette note ?')) return;
+  const { nsk, idx } = currentNote;
+  state.essais[nsk].splice(idx, 1);
+  saveState(); closeNoteModal(); render();
+  showToast('Note supprimée');
+}
+
 // ── KEYBOARD ──
 document.addEventListener('keydown', e => {
-  if (e.key==='Escape') closeModal();
-  if ((e.ctrlKey||e.metaKey)&&e.key==='Enter' && document.getElementById('overlay').classList.contains('open')) saveEssai();
+  if (e.key==='Escape') { closeModal(); closeNoteModal(); }
+  if ((e.ctrlKey||e.metaKey)&&e.key==='Enter') {
+    if (document.getElementById('overlay').classList.contains('open')) saveUnified();
+    if (document.getElementById('note-overlay').classList.contains('open')) saveNote();
+  }
 });
 
 // ── EXPORT / IMPORT ──
@@ -660,7 +892,7 @@ function checkPassword() {
   if (input===CORRECT_PASSWORD) {
     sessionStorage.setItem(PASSWORD_KEY,'ok');
     document.getElementById('pw-screen').style.display='none';
-    init(); syncFromRemote();
+    init(); initDragDrop(); syncFromRemote();
   } else {
     const inp = document.getElementById('pw-input');
     inp.classList.add('error');
@@ -677,7 +909,7 @@ function togglePwVisibility() {
 document.addEventListener('DOMContentLoaded', () => {
   if (sessionStorage.getItem(PASSWORD_KEY)==='ok') {
     document.getElementById('pw-screen').style.display='none';
-    init(); syncFromRemote();
+    init(); initDragDrop(); syncFromRemote();
   }
   document.getElementById('pw-input').addEventListener('keydown', e => { if(e.key==='Enter') checkPassword(); });
   document.getElementById('pw-input').focus();
