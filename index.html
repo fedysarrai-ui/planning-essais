@@ -9,552 +9,151 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #F5F4F0;
-    --surface: #FFFFFF;
-    --surface2: #F0EFE9;
-    --border: #E2E0D8;
-    --border2: #C8C6BC;
-    --text: #1A1917;
-    --text2: #6B6860;
-    --text3: #A09E98;
-    --accent: #1B4FBB;
-    --accent-light: #EAF0FC;
-    --accent-mid: #3D6DD4;
-    --danger: #C0392B;
-    --danger-light: #FDECEA;
-    --success: #1A7A4A;
-    --success-light: #E8F5EE;
+    --bg: #F5F4F0; --surface: #FFFFFF; --surface2: #F0EFE9;
+    --border: #E2E0D8; --border2: #C8C6BC;
+    --text: #1A1917; --text2: #6B6860; --text3: #A09E98;
+    --accent: #1B4FBB; --accent-light: #EAF0FC; --accent-mid: #3D6DD4;
+    --danger: #C0392B; --danger-light: #FDECEA;
     --today-dot: #E85D3A;
-    --font: 'DM Sans', sans-serif;
-    --mono: 'DM Mono', monospace;
-    --radius: 10px;
-    --radius-sm: 6px;
+    --font: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
+    --radius: 10px; --radius-sm: 6px;
     --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
     --shadow-modal: 0 8px 40px rgba(0,0,0,0.18);
   }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; line-height: 1.5; }
 
-  body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    font-size: 14px;
-    line-height: 1.5;
-  }
-
-  /* ── TOP NAV ── */
-  .nav {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 32px;
-    display: flex;
-    align-items: center;
-    height: 56px;
-    gap: 16px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  .nav-logo {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--accent);
-    letter-spacing: -0.02em;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+  /* NAV */
+  .nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 32px; display: flex; align-items: center; height: 56px; gap: 16px; position: sticky; top: 0; z-index: 10; }
+  .nav-logo { font-size: 15px; font-weight: 600; color: var(--accent); letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
   .nav-logo svg { width: 22px; height: 22px; }
   .nav-sep { width: 1px; height: 20px; background: var(--border); }
-  .nav-title { font-size: 14px; color: var(--text2); font-weight: 400; }
+  .nav-title { font-size: 14px; color: var(--text2); }
   .nav-actions { margin-left: auto; display: flex; gap: 8px; }
 
-  button {
-    font-family: var(--font);
-    cursor: pointer;
-    border: none;
-    outline: none;
-    transition: all 0.15s ease;
-  }
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 14px;
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    font-weight: 500;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text2);
-  }
+  button { font-family: var(--font); cursor: pointer; border: none; outline: none; transition: all 0.15s ease; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; background: var(--surface); border: 1px solid var(--border); color: var(--text2); }
   .btn:hover { background: var(--surface2); border-color: var(--border2); color: var(--text); }
-  .btn-primary {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-  }
-  .btn-primary:hover { background: var(--accent-mid); border-color: var(--accent-mid); }
+  .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-mid); }
   .btn-danger { color: var(--danger); border-color: #F5C6C2; background: var(--danger-light); }
   .btn-danger:hover { background: #F9D8D5; }
 
-  /* ── LAYOUT ── */
-  .main { padding: 28px 32px 60px; max-width: 1200px; margin: 0 auto; }
+  /* LAYOUT */
+  .main { padding: 28px 32px 60px; max-width: 1300px; margin: 0 auto; }
+  .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  .week-counter { font-size: 12px; color: var(--text3); font-family: var(--mono); background: var(--surface2); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); }
 
-  .toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-  }
-  .toolbar-left { display: flex; align-items: center; gap: 12px; }
-  .week-counter {
-    font-size: 12px;
-    color: var(--text3);
-    font-family: var(--mono);
-    background: var(--surface2);
-    padding: 4px 10px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-  }
-
-  /* ── WEEK BLOCK ── */
-  .week-block {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    margin-bottom: 20px;
-    box-shadow: var(--shadow);
-  }
-  .week-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 20px;
-    background: var(--surface2);
-    border-bottom: 1px solid var(--border);
-  }
-  .week-label {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text2);
-    font-family: var(--mono);
-  }
+  /* WEEK */
+  .week-block { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; box-shadow: var(--shadow); }
+  .week-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background: var(--surface2); border-bottom: 1px solid var(--border); }
+  .week-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text2); font-family: var(--mono); }
   .week-range { font-size: 12px; color: var(--text3); }
-  .week-delete-btn {
-    background: none;
-    border: none;
-    padding: 4px 8px;
-    border-radius: var(--radius-sm);
-    color: var(--text3);
-    font-size: 12px;
-  }
+  .week-delete-btn { background: none; border: none; padding: 4px 8px; border-radius: var(--radius-sm); color: var(--text3); font-size: 12px; }
   .week-delete-btn:hover { background: var(--danger-light); color: var(--danger); }
+  .essai-count { font-size: 10px; font-family: var(--mono); background: var(--accent-light); color: var(--accent); padding: 2px 7px; border-radius: 20px; border: 1px solid #B5CBF0; font-weight: 500; }
 
-  .days-grid {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    border-top: none;
-  }
-  .day-col {
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    min-height: 140px;
-  }
+  /* DAYS GRID */
+  .days-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .day-col { border-right: 1px solid var(--border); display: flex; flex-direction: column; }
   .day-col:last-child { border-right: none; }
 
-  .day-head {
-    padding: 12px 14px 10px;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
-  }
+  .day-head { padding: 10px 14px 8px; border-bottom: 1px solid var(--border); background: var(--surface); }
   .day-col.is-today .day-head { background: var(--accent-light); }
-  .day-col.is-weekend .day-head { background: var(--surface2); }
-
-  .day-name {
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--text3);
-    margin-bottom: 4px;
-  }
+  .day-name { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 3px; }
   .day-col.is-today .day-name { color: var(--accent); }
-
-  .day-number {
-    font-size: 22px;
-    font-weight: 600;
-    color: var(--text);
-    line-height: 1;
-    font-family: var(--mono);
-    letter-spacing: -0.03em;
-  }
+  .day-number { font-size: 20px; font-weight: 600; color: var(--text); line-height: 1; font-family: var(--mono); letter-spacing: -0.03em; }
   .day-col.is-today .day-number { color: var(--accent); }
+  .today-badge { display: inline-block; background: var(--today-dot); color: #fff; font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.06em; text-transform: uppercase; vertical-align: middle; margin-left: 6px; }
 
-  .today-badge {
-    display: inline-block;
-    background: var(--today-dot);
-    color: #fff;
-    font-size: 9px;
-    font-weight: 600;
-    padding: 2px 7px;
-    border-radius: 20px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    vertical-align: middle;
-    margin-left: 6px;
-  }
+  /* HALF-DAY SECTIONS */
+  .day-body { display: flex; flex-direction: column; flex: 1; }
+  .half-section { flex: 1; display: flex; flex-direction: column; border-bottom: 1px dashed var(--border); }
+  .half-section:last-child { border-bottom: none; }
+  .half-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); padding: 5px 8px 2px; }
+  .essais-area { flex: 1; padding: 3px 6px 4px; display: flex; flex-direction: column; gap: 4px; min-height: 48px; }
 
-  .essais-area {
-    flex: 1;
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
+  /* DROP ZONE */
+  .essais-area.drag-over { background: var(--accent-light); border-radius: 4px; outline: 2px dashed var(--accent-mid); outline-offset: -2px; }
 
-  .essai-chip {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 7px 10px;
-    cursor: pointer;
-    display: flex;
-    align-items: flex-start;
-    gap: 6px;
-    transition: all 0.12s;
-  }
-  .essai-chip:hover {
-    background: var(--accent-light);
-    border-color: #B5CBF0;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(27,79,187,0.1);
-  }
-  .essai-chip-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--accent-mid);
-    margin-top: 5px;
-    flex-shrink: 0;
-  }
-  .essai-chip-title {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    flex: 1;
-    min-width: 0;
-  }
+  /* CHIPS */
+  .essai-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 8px; cursor: grab; display: flex; align-items: flex-start; gap: 5px; transition: all 0.12s; user-select: none; }
+  .essai-chip:hover { background: var(--accent-light); border-color: #B5CBF0; box-shadow: 0 2px 8px rgba(27,79,187,0.1); }
+  .essai-chip.dragging { opacity: 0.4; cursor: grabbing; }
+  .essai-chip.has-group { border-left-width: 3px; }
+  .essai-chip-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-mid); margin-top: 4px; flex-shrink: 0; }
+  .essai-chip-title { font-size: 11px; font-weight: 500; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
   .essai-chip-empty { color: var(--text3); font-style: italic; }
+  .group-badge { font-size: 10px; font-weight: 700; font-family: var(--mono); padding: 2px 5px; border-radius: 4px; flex-shrink: 0; letter-spacing: 0.02em; }
 
-  .add-btn {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 6px 10px;
-    margin: 0 8px 8px;
-    background: none;
-    border: 1px dashed var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text3);
-    font-size: 12px;
-    font-weight: 400;
-    width: calc(100% - 16px);
-    transition: all 0.15s;
-  }
-  .add-btn:hover {
-    border-color: var(--accent-mid);
-    color: var(--accent);
-    background: var(--accent-light);
-  }
-  .add-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .add-btn { display: flex; align-items: center; gap: 5px; padding: 5px 8px; margin: 2px 6px 6px; background: none; border: 1px dashed var(--border); border-radius: var(--radius-sm); color: var(--text3); font-size: 11px; width: calc(100% - 12px); transition: all 0.15s; }
+  .add-btn:hover { border-color: var(--accent-mid); color: var(--accent); background: var(--accent-light); }
+  .add-btn svg { width: 11px; height: 11px; flex-shrink: 0; }
 
-  /* ── MODAL ── */
-  .overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(20,20,18,0.45);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(2px);
-  }
+  /* MODAL */
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(20,20,18,0.45); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
   .overlay.open { display: flex; }
-
-  .modal {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    box-shadow: var(--shadow-modal);
-    width: 460px;
-    max-width: calc(100vw - 32px);
-    animation: modal-in 0.18s ease;
-  }
-  @keyframes modal-in {
-    from { opacity: 0; transform: translateY(8px) scale(0.98); }
-    to { opacity: 1; transform: none; }
-  }
-
-  .modal-header {
-    padding: 20px 24px 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow-modal); width: 460px; max-width: calc(100vw - 32px); animation: modal-in 0.18s ease; }
+  @keyframes modal-in { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+  .modal-header { padding: 20px 24px 0; display: flex; align-items: center; justify-content: space-between; }
   .modal-header-left { display: flex; flex-direction: column; gap: 2px; }
   .modal-h { font-size: 16px; font-weight: 600; color: var(--text); }
   .modal-date { font-size: 12px; color: var(--text3); font-family: var(--mono); }
-
-  .modal-close {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 50%;
-    width: 30px; height: 30px;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--text2);
-    font-size: 16px;
-    line-height: 1;
-    flex-shrink: 0;
-  }
+  .modal-close { background: var(--surface2); border: 1px solid var(--border); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: var(--text2); font-size: 16px; line-height: 1; flex-shrink: 0; }
   .modal-close:hover { background: var(--danger-light); color: var(--danger); border-color: #F5C6C2; }
-
   .modal-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
-
   .form-group { display: flex; flex-direction: column; gap: 6px; }
-  .form-label {
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text2);
-  }
-  .form-input, .form-textarea {
-    font-family: var(--font);
-    font-size: 14px;
-    color: var(--text);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 10px 12px;
-    outline: none;
-    transition: border-color 0.15s;
-    width: 100%;
-  }
-  .form-input:focus, .form-textarea:focus {
-    border-color: var(--accent-mid);
-    box-shadow: 0 0 0 3px rgba(27,79,187,0.1);
-  }
+  .form-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text2); }
+  .form-input, .form-textarea { font-family: var(--font); font-size: 14px; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; outline: none; transition: border-color 0.15s; width: 100%; }
+  .form-input:focus, .form-textarea:focus { border-color: var(--accent-mid); box-shadow: 0 0 0 3px rgba(27,79,187,0.1); }
   .form-textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
   .form-hint { font-size: 11px; color: var(--text3); }
-
-  .modal-footer {
-    padding: 0 24px 20px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+  .modal-footer { padding: 0 24px 20px; display: flex; align-items: center; gap: 8px; }
   .modal-footer-right { margin-left: auto; display: flex; gap: 8px; }
 
-  /* ── EMPTY STATE ── */
-  .empty-state {
-    text-align: center;
-    padding: 48px 24px;
-    color: var(--text3);
-    font-size: 13px;
-  }
-
-  /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
-
-  /* ── PASSWORD SCREEN ── */
-  .pw-screen {
-    position: fixed;
-    inset: 0;
-    background: var(--bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
-  }
-  .pw-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 40px 40px 32px;
-    width: 360px;
-    box-shadow: var(--shadow-modal);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-  }
-  .pw-logo {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--accent);
-    letter-spacing: -0.02em;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .pw-title {
-    text-align: center;
-  }
-  .pw-title h2 {
-    font-size: 17px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-  .pw-title p {
-    font-size: 13px;
-    color: var(--text3);
-  }
-  .pw-form {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .pw-input-wrap {
-    position: relative;
-  }
-  .pw-input {
-    width: 100%;
-    padding: 11px 40px 11px 14px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-family: var(--mono);
-    font-size: 15px;
-    color: var(--text);
-    background: var(--surface);
-    outline: none;
-    letter-spacing: 0.1em;
-    transition: border-color 0.15s;
-  }
-  .pw-input:focus { border-color: var(--accent-mid); box-shadow: 0 0 0 3px rgba(27,79,187,0.1); }
-  .pw-input.error { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(192,57,43,0.1); animation: shake 0.3s ease; }
-  .pw-toggle {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    padding: 4px;
-    color: var(--text3);
-    cursor: pointer;
-  }
-  .pw-toggle:hover { color: var(--text2); }
-  .pw-submit {
-    width: 100%;
-    padding: 11px;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    font-weight: 500;
-    font-family: var(--font);
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  .pw-submit:hover { background: var(--accent-mid); }
-  .pw-error {
-    font-size: 12px;
-    color: var(--danger);
-    text-align: center;
-    min-height: 16px;
-  }
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-6px); }
-    75% { transform: translateX(6px); }
-  }
-
-  /* ── PRINT ── */
-  @media print {
-    .nav-actions, .toolbar-right, .add-btn, .week-delete-btn { display: none !important; }
-    .week-block { break-inside: avoid; box-shadow: none; }
-    body { background: white; }
-  }
-
-  /* ── TOAST ── */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: var(--text);
-    color: #fff;
-    font-size: 13px;
-    padding: 10px 18px;
-    border-radius: var(--radius-sm);
-    z-index: 999;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: all 0.2s;
-    pointer-events: none;
-  }
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--text); color: #fff; font-size: 13px; padding: 10px 18px; border-radius: var(--radius-sm); z-index: 999; opacity: 0; transform: translateY(8px); transition: all 0.2s; pointer-events: none; }
   .toast.show { opacity: 1; transform: none; }
 
-  .essai-count {
-    font-size: 10px;
-    font-family: var(--mono);
-    background: var(--accent-light);
-    color: var(--accent);
-    padding: 2px 7px;
-    border-radius: 20px;
-    border: 1px solid #B5CBF0;
-    font-weight: 500;
-  }
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
-  /* ── GROUP BADGE ── */
-  .group-badge {
-    font-size: 10px;
-    font-weight: 700;
-    font-family: var(--mono);
-    padding: 2px 6px;
-    border-radius: 4px;
-    flex-shrink: 0;
-    letter-spacing: 0.02em;
-  }
-  .essai-chip { position: relative; }
-  .essai-chip.has-group { border-left-width: 3px; }
+  /* PASSWORD */
+  .pw-screen { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 999; }
+  .pw-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px 40px 32px; width: 360px; box-shadow: var(--shadow-modal); display: flex; flex-direction: column; align-items: center; gap: 20px; }
+  .pw-logo { font-size: 18px; font-weight: 600; color: var(--accent); letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+  .pw-title { text-align: center; }
+  .pw-title h2 { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .pw-title p { font-size: 13px; color: var(--text3); }
+  .pw-form { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+  .pw-input-wrap { position: relative; }
+  .pw-input { width: 100%; padding: 11px 40px 11px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--mono); font-size: 15px; color: var(--text); background: var(--surface); outline: none; letter-spacing: 0.1em; transition: border-color 0.15s; }
+  .pw-input:focus { border-color: var(--accent-mid); box-shadow: 0 0 0 3px rgba(27,79,187,0.1); }
+  .pw-input.error { border-color: var(--danger); animation: shake 0.3s ease; }
+  .pw-toggle { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; padding: 4px; color: var(--text3); cursor: pointer; }
+  .pw-submit { width: 100%; padding: 11px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; font-family: var(--font); cursor: pointer; transition: background 0.15s; }
+  .pw-submit:hover { background: var(--accent-mid); }
+  .pw-error { font-size: 12px; color: var(--danger); text-align: center; min-height: 16px; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+  /* PRINT */
+  @media print { .nav-actions,.toolbar,.add-btn,.week-delete-btn{display:none!important} .week-block{break-inside:avoid;box-shadow:none} body{background:white} }
 </style>
 </head>
 <body>
 
-<!-- Password Screen -->
 <div class="pw-screen" id="pw-screen">
   <div class="pw-box">
     <div class="pw-logo">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="2"/>
-        <path d="M9 3v18M3 9h6M3 15h6"/><path d="M15 8v2M15 14v2"/>
-      </svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h6M3 15h6"/><path d="M15 8v2M15 14v2"/></svg>
       Foodles
     </div>
-    <div class="pw-title">
-      <h2>Planning des essais</h2>
-      <p>Accès réservé à l'équipe Foodles</p>
-    </div>
+    <div class="pw-title"><h2>Planning des essais</h2><p>Accès réservé à l'équipe Foodles</p></div>
     <div class="pw-form">
       <div class="pw-input-wrap">
         <input class="pw-input" id="pw-input" type="password" placeholder="Mot de passe" autocomplete="current-password"/>
-        <button class="pw-toggle" onclick="togglePwVisibility()" tabindex="-1" title="Afficher/masquer">
-          <svg id="pw-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <button class="pw-toggle" onclick="togglePwVisibility()" tabindex="-1">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
       </div>
       <div class="pw-error" id="pw-error"></div>
@@ -565,11 +164,7 @@
 
 <nav class="nav">
   <div class="nav-logo">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2"/>
-      <path d="M9 3v18M3 9h6M3 15h6"/>
-      <path d="M15 8v2M15 14v2"/>
-    </svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h6M3 15h6"/><path d="M15 8v2M15 14v2"/></svg>
     Foodles
   </div>
   <div class="nav-sep"></div>
@@ -579,16 +174,12 @@
     <span id="sync-label">—</span>
   </div>
   <div class="nav-actions">
-    <button class="btn" onclick="exportData()" title="Exporter les données">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-      </svg>
+    <button class="btn" onclick="exportData()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Exporter
     </button>
-    <button class="btn" onclick="importData()" title="Importer des données">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
-      </svg>
+    <button class="btn" onclick="importData()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       Importer
     </button>
   </div>
@@ -596,26 +187,24 @@
 
 <main class="main">
   <div class="toolbar">
-    <div class="toolbar-left">
-      <button class="btn btn-primary" onclick="addWeek()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Ajouter une semaine
-      </button>
-      <span class="week-counter" id="week-counter">— semaines</span>
-    </div>
+    <button class="btn btn-primary" onclick="addWeek()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Ajouter une semaine
+    </button>
+    <span class="week-counter" id="week-counter">— semaines</span>
   </div>
   <div id="planner"></div>
 </main>
 
 <!-- Modal -->
 <div class="overlay" id="overlay" onclick="overlayClick(event)">
-  <div class="modal" id="modal">
+  <div class="modal">
     <div class="modal-header">
       <div class="modal-header-left">
         <span class="modal-h" id="modal-h">Nouvel essai</span>
         <span class="modal-date" id="modal-date"></span>
       </div>
-      <button class="modal-close" onclick="closeModal()" title="Fermer">×</button>
+      <button class="modal-close" onclick="closeModal()">×</button>
     </div>
     <div class="modal-body">
       <div class="form-group">
@@ -655,160 +244,123 @@
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
-
-<!-- Import input -->
 <input type="file" id="import-input" accept=".json" style="display:none" onchange="handleImport(event)"/>
 
 <script>
-// ── CONSTANTS ──
 const STORAGE_KEY = 'foodles_planning_v1';
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby_sHQ4pIdeocvQkFoWtmJQiH6xrGlUBVyZdtp6bjTkgWl8ymByU7ZP_iYsBTAaVTlx/exec';
+const CORRECT_PASSWORD = 'FedyFoodles2026!';
+const PASSWORD_KEY = 'foodles_planning_auth';
+
 const GROUP_COLORS = [
-  { bg: '#EAF0FC', border: '#3D6DD4', text: '#1B4FBB' }, // bleu
-  { bg: '#FEF3E2', border: '#E8A020', text: '#A05C00' }, // orange
-  { bg: '#E8F5EE', border: '#1A7A4A', text: '#0F5433' }, // vert
-  { bg: '#F9E8F5', border: '#9B3DBF', text: '#6B1E8A' }, // violet
-  { bg: '#FDE8E8', border: '#C0392B', text: '#8B1A1A' }, // rouge
-  { bg: '#E8F8F9', border: '#1A8A9A', text: '#0F5A66' }, // cyan
-  { bg: '#F5F0E8', border: '#8A6A2A', text: '#5A4010' }, // marron
-  { bg: '#F0F0F0', border: '#606060', text: '#303030' }, // gris
+  { bg: '#EAF0FC', border: '#3D6DD4', text: '#1B4FBB' },
+  { bg: '#FEF3E2', border: '#E8A020', text: '#A05C00' },
+  { bg: '#E8F5EE', border: '#1A7A4A', text: '#0F5433' },
+  { bg: '#F9E8F5', border: '#9B3DBF', text: '#6B1E8A' },
+  { bg: '#FDE8E8', border: '#C0392B', text: '#8B1A1A' },
+  { bg: '#E8F8F9', border: '#1A8A9A', text: '#0F5A66' },
+  { bg: '#F5F0E8', border: '#8A6A2A', text: '#5A4010' },
+  { bg: '#F0F0F0', border: '#606060', text: '#303030' },
 ];
-const DAYS_FR = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+const DAYS_FR = ['Lun','Mar','Mer','Jeu','Ven'];
 const MONTHS_FR = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 const MONTHS_SHORT = ['jan','fév','mar','avr','mai','juin','juil','août','sep','oct','nov','déc'];
 
-// ── STATE ──
-let state = { weeks: [], essais: {}, groups: [] }; // groups: [{id, label, colorIdx}]
-let currentEdit = null; // { key, idx } or { key, idx:null } for new
-let nextGroupId = 1;
+// State: essais keys are "YYYY-MM-DD|am" or "YYYY-MM-DD|pm"
+let state = { weeks: [], essais: {}, groups: [] };
+let currentEdit = null;
 
-// ── INIT ──
-function init() {
-  loadState();
-  if (state.weeks.length === 0) {
-    state.weeks = ['2026-06-08', '2026-06-15', '2026-06-22'];
-    saveState();
-  }
-  render();
-}
+// ── SEEDING EXISTING DATA ──
+const SEED_DATA = {"weeks":["2026-06-08","2026-06-15","2026-06-22"],"essais":{"2026-06-08":[{"title":"wicked-coffee - après retrofit","desc":"CAL = 1 \nObjectif : montrer à marjolaine qu'on se rapproche des résultats qu'on a eu dans les controles de températures par les FO","groupId":2,"createdAt":"2026-06-09T08:34:48.100Z","updatedAt":"2026-06-09T08:42:25.430Z"},{"title":"krivodol - positions de sondes","desc":"Objectif : montrer que la façon dont on pique un produit peut avoir un impact sur la température observée\n\nPosition : arrière des plats E2 et E3","groupId":3,"createdAt":"2026-06-09T08:44:12.180Z","updatedAt":"2026-06-09T08:44:54.096Z"}],"2026-06-09":[{"title":"wicked-coffee - après retrofit","desc":"CAL = 1 \nObjectif : montrer à marjolaine qu'on se rapproche des résultats qu'on a eu dans les controles de températures par les FO","groupId":2,"createdAt":"2026-06-09T08:35:03.699Z","updatedAt":"2026-06-09T08:42:23.864Z"},{"title":"krivodol - positions de sondes","desc":"Objectif : montrer que la façon dont on pique un produit peut avoir un impact sur la température observée\n\nPosition : milieu des plats E2 et E3\nAléatoire pour tous les produits à 10h45","groupId":3,"createdAt":"2026-06-09T08:44:19.180Z","updatedAt":"2026-06-09T08:45:30.663Z"}],"2026-06-10":[{"title":"wicked-coffee - après retrofit","desc":"CAL = 1 \nObjectif : montrer à marjolaine qu'on se rapproche des résultats qu'on a eu dans les controles de températures par les FO","groupId":2,"createdAt":"2026-06-09T08:35:14.549Z","updatedAt":"2026-06-09T08:42:22.164Z"},{"title":"lipen - répétabilité R290","desc":"krivodol et shark-fin présentent maintenant des bons résultats \nObjectif : validé la répétabilité sur le reste des 6 frigos R290","groupId":4,"createdAt":"2026-06-09T11:26:29.644Z","updatedAt":"2026-06-09T11:27:53.477Z"}],"2026-06-11":[{"title":"lipen - répétabilité R290","desc":"krivodol et shark-fin présentent maintenant des bons résultats \nObjectif : validé la répétabilité sur le reste des 6 frigos R290","groupId":4,"createdAt":"2026-06-09T11:26:41.794Z","updatedAt":"2026-06-09T11:27:37.994Z"},{"title":"lillie - répétabilité R290","desc":"krivodol et shark-fin présentent maintenant des bons résultats \nObjectif : validé la répétabilité sur le reste des 6 frigos R290","groupId":5,"createdAt":"2026-06-09T11:27:49.611Z","updatedAt":"2026-06-09T11:28:08.261Z"}],"2026-06-12":[{"title":"lillie - répétabilité R290","desc":"krivodol et shark-fin présentent maintenant des bons résultats \nObjectif : validé la répétabilité sur le reste des 6 frigos R290","groupId":5,"createdAt":"2026-06-09T11:28:00.144Z","updatedAt":"2026-06-09T11:28:33.060Z"},{"title":"ogoya - répétabilité R290","desc":"krivodol et shark-fin présentent maintenant des bons résultats \nObjectif : validé la répétabilité sur le reste des 6 frigos R290","groupId":null,"createdAt":"2026-06-09T11:28:29.077Z","updatedAt":"2026-06-09T11:28:39.860Z"}]},"groups":[{"id":1,"label":"#1","colorIdx":0},{"id":2,"label":"1","colorIdx":1},{"id":3,"label":"2","colorIdx":2},{"id":4,"label":"3","colorIdx":3},{"id":5,"label":"4","colorIdx":4}]};
 
 // ── DATE HELPERS ──
-// Toutes les dates sont manipulées en heure locale (pas UTC) pour éviter les décalages de fuseau horaire.
 function localKey(dt) {
-  // Formate une Date en 'YYYY-MM-DD' en heure locale
-  const y = dt.getFullYear();
-  const m = String(dt.getMonth() + 1).padStart(2, '0');
-  const d = String(dt.getDate()).padStart(2, '0');
+  const y = dt.getFullYear(), m = String(dt.getMonth()+1).padStart(2,'0'), d = String(dt.getDate()).padStart(2,'0');
   return `${y}-${m}-${d}`;
 }
-function todayLocal() {
-  const n = new Date();
-  return new Date(n.getFullYear(), n.getMonth(), n.getDate());
-}
-function getMonday(d) {
-  // Utilise les composantes locales pour éviter tout décalage UTC
-  const dt = (d instanceof Date) ? new Date(d.getFullYear(), d.getMonth(), d.getDate()) : d;
-  const day = dt.getDay(); // 0=dim, 1=lun, …
-  const diff = day === 0 ? -6 : 1 - day;
-  dt.setDate(dt.getDate() + diff);
-  return dt;
-}
-function addDays(d, n) {
-  // Clone proprement pour ne jamais muter l'original
-  const src = typeof d === 'string' ? parseKey(d) : d;
-  const dt = new Date(src.getFullYear(), src.getMonth(), src.getDate());
-  dt.setDate(dt.getDate() + n);
-  return dt;
-}
-function fmtKey(d) {
-  if (typeof d === 'string') return d;
-  return localKey(d);
-}
-function parseKey(k) {
-  // Parse 'YYYY-MM-DD' en Date locale (pas UTC)
-  const [y, m, day] = k.split('-').map(Number);
-  return new Date(y, m - 1, day);
-}
-function fmtDisplay(d) {
-  const dt = typeof d === 'string' ? parseKey(d) : d;
-  return `${dt.getDate()} ${MONTHS_SHORT[dt.getMonth()]}`;
-}
-function fmtFull(d) {
-  const dt = typeof d === 'string' ? parseKey(d) : d;
-  const dayIdx = dt.getDay(); // 0=dim
-  const frIdx = dayIdx === 0 ? 6 : dayIdx - 1;
-  return `${DAYS_FR[frIdx]} ${dt.getDate()} ${MONTHS_FR[dt.getMonth()]} ${dt.getFullYear()}`;
-}
-function isToday(k) {
-  const t = new Date();
-  return localKey(t) === k;
-}
-function isWeekend(d) {
-  const day = (typeof d === 'string' ? parseKey(d) : d).getDay();
-  return day === 0 || day === 6;
+function parseKey(k) { const [y,m,d] = k.split('-').map(Number); return new Date(y,m-1,d); }
+function addDays(d, n) { const src = typeof d==='string' ? parseKey(d) : d; const dt = new Date(src.getFullYear(),src.getMonth(),src.getDate()); dt.setDate(dt.getDate()+n); return dt; }
+function fmtKey(d) { return typeof d==='string' ? d : localKey(d); }
+function fmtDisplay(d) { const dt = typeof d==='string' ? parseKey(d) : d; return `${dt.getDate()} ${MONTHS_SHORT[dt.getMonth()]}`; }
+function fmtFull(d) { const dt = typeof d==='string' ? parseKey(d) : d; const di = dt.getDay(); return `${DAYS_FR[di===0?6:di-1]} ${dt.getDate()} ${MONTHS_FR[dt.getMonth()]} ${dt.getFullYear()}`; }
+function isToday(k) { return localKey(new Date()) === k; }
+
+// Slot key: "YYYY-MM-DD|am" or "YYYY-MM-DD|pm"
+function slotKey(dateKey, half) { return `${dateKey}|${half}`; }
+function parseSlot(sk) { const [dk, half] = sk.split('|'); return { dateKey: dk, half }; }
+
+// ── MIGRATE OLD DATA ──
+// Old data uses plain "YYYY-MM-DD" keys — migrate to "YYYY-MM-DD|am"
+function migrateState(s) {
+  if (!s.essais) return s;
+  const newEssais = {};
+  for (const [k, v] of Object.entries(s.essais)) {
+    if (k.includes('|')) {
+      newEssais[k] = v; // already new format
+    } else {
+      // migrate: put all existing essais in "am" slot
+      newEssais[slotKey(k, 'am')] = v;
+    }
+  }
+  s.essais = newEssais;
+  return s;
 }
 
 // ── STORAGE ──
 function saveState() {
-  // Sauvegarde locale immédiate
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  // Sauvegarde distante (Google Sheets) en arrière-plan
-  fetch(SCRIPT_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'save', data: state }),
-  }).catch(() => {}); // silencieux si pas de réseau
+  fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify({ action:'save', data: state }) }).catch(()=>{});
 }
-
 function loadState() {
-  // 1. Charge depuis localStorage d'abord (instantané)
   try {
     const s = localStorage.getItem(STORAGE_KEY);
-    if (s) state = JSON.parse(s);
-  } catch(e) { state = { weeks: [], essais: {} }; }
+    if (s) { state = migrateState(JSON.parse(s)); return; }
+  } catch(e) {}
+  // First load: inject seed data (migrated)
+  state = migrateState(JSON.parse(JSON.stringify(SEED_DATA)));
+  saveState();
 }
-
 async function syncFromRemote() {
-  // 2. Puis charge depuis Google Sheets (source de vérité partagée)
   try {
     showSyncStatus('sync');
     const res = await fetch(SCRIPT_URL + '?action=load');
     const json = await res.json();
     if (json.ok && json.data) {
-      state = json.data;
+      state = migrateState(json.data);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       render();
     }
     showSyncStatus('ok');
-  } catch(e) {
-    showSyncStatus('error');
+  } catch(e) { showSyncStatus('error'); }
+}
+
+// ── INIT ──
+function init() {
+  loadState();
+  if (!state.weeks || state.weeks.length === 0) {
+    state.weeks = ['2026-06-08','2026-06-15','2026-06-22'];
+    saveState();
   }
+  if (!state.groups) state.groups = [];
+  render();
 }
 
 // ── RENDER ──
 function render() {
   const container = document.getElementById('planner');
   container.innerHTML = '';
-  document.getElementById('week-counter').textContent =
-    `${state.weeks.length} semaine${state.weeks.length > 1 ? 's' : ''}`;
-
-  if (state.weeks.length === 0) {
-    container.innerHTML = `<div class="empty-state">Aucune semaine planifiée.<br>Cliquez sur "Ajouter une semaine" pour commencer.</div>`;
-    return;
-  }
+  document.getElementById('week-counter').textContent = `${state.weeks.length} semaine${state.weeks.length>1?'s':''}`;
 
   state.weeks.forEach((monKey, wi) => {
-    const mon = parseKey(monKey);
     const fri = addDays(monKey, 4);
-    const wLabel = `Semaine ${wi + 1}`;
-    const wRange = `${fmtDisplay(mon)} – ${fmtDisplay(fri)} ${mon.getFullYear()}`;
+    const wLabel = `Semaine ${wi+1}`;
+    const wRange = `${fmtDisplay(monKey)} – ${fmtDisplay(fri)} ${parseKey(monKey).getFullYear()}`;
 
-    // Count essais for this week
     let weekCount = 0;
     for (let i = 0; i < 5; i++) {
-      const k = fmtKey(addDays(monKey, i));
-      weekCount += (state.essais[k] || []).length;
+      const dk = fmtKey(addDays(monKey, i));
+      weekCount += (state.essais[slotKey(dk,'am')]||[]).length + (state.essais[slotKey(dk,'pm')]||[]).length;
     }
 
     const block = document.createElement('div');
@@ -817,32 +369,36 @@ function render() {
     let daysHtml = '';
     for (let i = 0; i < 5; i++) {
       const d = addDays(monKey, i);
-      const k = fmtKey(d);
-      const todayCls = isToday(k) ? ' is-today' : '';
-      const list = state.essais[k] || [];
-      const pips = list.map((e, ei) => {
-        const grp = e.groupId ? state.groups.find(g => g.id === e.groupId) : null;
-        const col = grp ? GROUP_COLORS[grp.colorIdx % GROUP_COLORS.length] : null;
-        const chipStyle = col ? `border-left-color:${col.border};background:${col.bg};` : '';
-        const badgeStyle = col ? `background:${col.border};color:#fff;` : '';
-        const badge = grp ? `<span class="group-badge" style="${badgeStyle}">#${grp.label}</span>` : '<div class="essai-chip-dot"></div>';
-        return `<div class="essai-chip${grp ? ' has-group' : ''}" onclick="openEdit('${k}',${ei})" title="${esc(e.title || 'Sans titre')}" style="${chipStyle}">
-          ${badge}
-          <span class="essai-chip-title ${!e.title ? 'essai-chip-empty' : ''}">${e.title ? esc(e.title) : 'Sans titre'}</span>
-        </div>`;
-      }).join('');
+      const dk = fmtKey(d);
+      const todayCls = isToday(dk) ? ' is-today' : '';
+
+      const amKey = slotKey(dk,'am');
+      const pmKey = slotKey(dk,'pm');
 
       daysHtml += `
         <div class="day-col${todayCls}">
           <div class="day-head">
             <div class="day-name">${DAYS_FR[i]}</div>
-            <div class="day-number">${d.getDate()} <span style="font-size:13px;color:var(--text3)">${MONTHS_SHORT[d.getMonth()]}</span>${isToday(k) ? '<span class="today-badge">Auj.</span>' : ''}</div>
+            <div class="day-number">${d.getDate()} <span style="font-size:12px;color:var(--text3)">${MONTHS_SHORT[d.getMonth()]}</span>${isToday(dk)?'<span class="today-badge">Auj.</span>':''}</div>
           </div>
-          <div class="essais-area">${pips}</div>
-          <button class="add-btn" onclick="openNew('${k}')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Ajouter un essai
-          </button>
+          <div class="day-body">
+            <div class="half-section">
+              <div class="half-label">Matin</div>
+              ${renderSlot(amKey)}
+              <button class="add-btn" onclick="openNew('${amKey}')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Ajouter
+              </button>
+            </div>
+            <div class="half-section">
+              <div class="half-label">Après-midi</div>
+              ${renderSlot(pmKey)}
+              <button class="add-btn" onclick="openNew('${pmKey}')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Ajouter
+              </button>
+            </div>
+          </div>
         </div>`;
     }
 
@@ -851,9 +407,9 @@ function render() {
         <div style="display:flex;align-items:center;gap:10px">
           <span class="week-label">${wLabel}</span>
           <span class="week-range">${wRange}</span>
-          ${weekCount > 0 ? `<span class="essai-count">${weekCount} essai${weekCount > 1 ? 's' : ''}</span>` : ''}
+          ${weekCount>0?`<span class="essai-count">${weekCount} essai${weekCount>1?'s':''}</span>`:''}
         </div>
-        <button class="week-delete-btn" onclick="deleteWeek(${wi})" title="Supprimer cette semaine">
+        <button class="week-delete-btn" onclick="deleteWeek(${wi})">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           Supprimer
         </button>
@@ -862,53 +418,106 @@ function render() {
 
     container.appendChild(block);
   });
+
+  setupDragDrop();
 }
 
-function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function renderSlot(sk) {
+  const list = state.essais[sk] || [];
+  const chips = list.map((e, ei) => {
+    const grp = e.groupId ? (state.groups||[]).find(g => g.id===e.groupId) : null;
+    const col = grp ? GROUP_COLORS[grp.colorIdx % GROUP_COLORS.length] : null;
+    const chipStyle = col ? `border-left-color:${col.border};background:${col.bg};` : '';
+    const badgeStyle = col ? `background:${col.border};color:#fff;` : '';
+    const badge = grp ? `<span class="group-badge" style="${badgeStyle}">#${esc(grp.label)}</span>` : '<div class="essai-chip-dot"></div>';
+    return `<div class="essai-chip${grp?' has-group':''}" 
+      draggable="true" 
+      data-slot="${sk}" data-idx="${ei}"
+      onclick="openEdit('${sk}',${ei})" 
+      title="${esc(e.title||'Sans titre')}" 
+      style="${chipStyle}">
+      ${badge}
+      <span class="essai-chip-title${!e.title?' essai-chip-empty':''}">${e.title?esc(e.title):'Sans titre'}</span>
+    </div>`;
+  }).join('');
+  return `<div class="essais-area" data-slot="${sk}">${chips}</div>`;
+}
+
+// ── DRAG & DROP ──
+let dragSrc = null; // { sk, idx }
+
+function setupDragDrop() {
+  document.querySelectorAll('.essai-chip[draggable]').forEach(chip => {
+    chip.addEventListener('dragstart', e => {
+      dragSrc = { sk: chip.dataset.slot, idx: parseInt(chip.dataset.idx) };
+      chip.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    chip.addEventListener('dragend', () => {
+      chip.classList.remove('dragging');
+      document.querySelectorAll('.essais-area').forEach(z => z.classList.remove('drag-over'));
+    });
+  });
+
+  document.querySelectorAll('.essais-area').forEach(zone => {
+    zone.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      document.querySelectorAll('.essais-area').forEach(z => z.classList.remove('drag-over'));
+      zone.classList.add('drag-over');
+    });
+    zone.addEventListener('dragleave', e => {
+      if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+    });
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      const targetSk = zone.dataset.slot;
+      if (!dragSrc || dragSrc.sk === targetSk) return;
+      // Move essai
+      const srcList = state.essais[dragSrc.sk] || [];
+      const [moved] = srcList.splice(dragSrc.idx, 1);
+      state.essais[dragSrc.sk] = srcList;
+      if (!state.essais[targetSk]) state.essais[targetSk] = [];
+      state.essais[targetSk].push(moved);
+      dragSrc = null;
+      saveState();
+      render();
+      showToast('Essai déplacé');
+    });
+  });
 }
 
 // ── WEEK ACTIONS ──
 function addWeek() {
-  let lastKey;
-  if (state.weeks.length === 0) {
-    lastKey = fmtKey(getMonday(todayLocal()));
-  } else {
-    lastKey = state.weeks[state.weeks.length - 1];
-  }
-  const nextMon = addDays(lastKey, 7);
-  state.weeks.push(fmtKey(nextMon));
-  saveState();
-  render();
-  showToast('Semaine ajoutée');
+  const lastKey = state.weeks.length ? state.weeks[state.weeks.length-1] : '2026-06-08';
+  state.weeks.push(fmtKey(addDays(lastKey, 7)));
+  saveState(); render(); showToast('Semaine ajoutée');
 }
 
 function deleteWeek(wi) {
   const delKey = state.weeks[wi];
   let hasEssais = false;
   for (let i = 0; i < 5; i++) {
-    const k = fmtKey(addDays(delKey, i));
-    if ((state.essais[k] || []).length > 0) { hasEssais = true; break; }
+    const dk = fmtKey(addDays(delKey, i));
+    if ((state.essais[slotKey(dk,'am')]||[]).length || (state.essais[slotKey(dk,'pm')]||[]).length) { hasEssais = true; break; }
   }
-  const msg = hasEssais
-    ? 'Cette semaine contient des essais. Supprimer quand même ?'
-    : 'Supprimer cette semaine ?';
-  if (!confirm(msg)) return;
-  // Clean essais
+  if (!confirm(hasEssais ? 'Cette semaine contient des essais. Supprimer quand même ?' : 'Supprimer cette semaine ?')) return;
   for (let i = 0; i < 5; i++) {
-    delete state.essais[fmtKey(addDays(delKey, i))];
+    const dk = fmtKey(addDays(delKey, i));
+    delete state.essais[slotKey(dk,'am')];
+    delete state.essais[slotKey(dk,'pm')];
   }
   state.weeks.splice(wi, 1);
-  saveState();
-  render();
-  showToast('Semaine supprimée');
+  saveState(); render(); showToast('Semaine supprimée');
 }
 
 // ── MODAL ──
-function openNew(key) {
-  currentEdit = { key, idx: null, groupId: null };
+function openNew(sk) {
+  currentEdit = { sk, idx: null, groupId: null };
   document.getElementById('modal-h').textContent = 'Nouvel essai';
-  document.getElementById('modal-date').textContent = fmtFull(key);
+  const { dateKey, half } = parseSlot(sk);
+  document.getElementById('modal-date').textContent = fmtFull(dateKey) + ' — ' + (half==='am'?'Matin':'Après-midi');
   document.getElementById('inp-title').value = '';
   document.getElementById('inp-desc').value = '';
   document.getElementById('btn-del').style.display = 'none';
@@ -917,217 +526,148 @@ function openNew(key) {
   setTimeout(() => document.getElementById('inp-title').focus(), 80);
 }
 
-function openEdit(key, idx) {
-  currentEdit = { key, idx, groupId: (state.essais[key][idx] || {}).groupId || null };
-  const e = (state.essais[key] || [])[idx];
+function openEdit(sk, idx) {
+  const e = (state.essais[sk]||[])[idx];
   if (!e) return;
-  document.getElementById('modal-h').textContent = 'Modifier l\'essai';
-  document.getElementById('modal-date').textContent = fmtFull(key);
-  document.getElementById('inp-title').value = e.title || '';
-  document.getElementById('inp-desc').value = e.desc || '';
+  currentEdit = { sk, idx, groupId: e.groupId||null };
+  document.getElementById('modal-h').textContent = "Modifier l'essai";
+  const { dateKey, half } = parseSlot(sk);
+  document.getElementById('modal-date').textContent = fmtFull(dateKey) + ' — ' + (half==='am'?'Matin':'Après-midi');
+  document.getElementById('inp-title').value = e.title||'';
+  document.getElementById('inp-desc').value = e.desc||'';
   document.getElementById('btn-del').style.display = '';
-  renderGroupSelector(e.groupId || null);
+  renderGroupSelector(e.groupId||null);
   document.getElementById('overlay').classList.add('open');
   setTimeout(() => document.getElementById('inp-title').focus(), 80);
 }
 
-function closeModal() {
-  document.getElementById('overlay').classList.remove('open');
-  currentEdit = null;
-}
-
-function overlayClick(e) {
-  if (e.target === document.getElementById('overlay')) closeModal();
-}
+function closeModal() { document.getElementById('overlay').classList.remove('open'); currentEdit = null; }
+function overlayClick(e) { if (e.target===document.getElementById('overlay')) closeModal(); }
 
 function saveEssai() {
   if (!currentEdit) return;
   const title = document.getElementById('inp-title').value.trim();
   const desc = document.getElementById('inp-desc').value.trim();
-  const { key, idx, groupId } = currentEdit;
-  if (!state.essais[key]) state.essais[key] = [];
-  const entry = { title, desc, groupId: groupId || null };
-  if (idx === null) {
-    entry.createdAt = new Date().toISOString();
-    state.essais[key].push(entry);
-  } else {
-    state.essais[key][idx] = { ...state.essais[key][idx], ...entry, updatedAt: new Date().toISOString() };
-  }
-  saveState();
-  closeModal();
-  render();
-  showToast(idx === null ? 'Essai ajouté' : 'Essai mis à jour');
+  const { sk, idx, groupId } = currentEdit;
+  if (!state.essais[sk]) state.essais[sk] = [];
+  const entry = { title, desc, groupId: groupId||null };
+  if (idx===null) { entry.createdAt = new Date().toISOString(); state.essais[sk].push(entry); }
+  else { state.essais[sk][idx] = { ...state.essais[sk][idx], ...entry, updatedAt: new Date().toISOString() }; }
+  saveState(); closeModal(); render();
+  showToast(idx===null ? 'Essai ajouté' : 'Essai mis à jour');
 }
 
 function deleteEssai() {
-  if (!currentEdit || currentEdit.idx === null) return;
+  if (!currentEdit || currentEdit.idx===null) return;
   if (!confirm('Supprimer cet essai ?')) return;
-  const { key, idx } = currentEdit;
-  state.essais[key].splice(idx, 1);
-  saveState();
-  closeModal();
-  render();
-  showToast('Essai supprimé');
+  const { sk, idx } = currentEdit;
+  state.essais[sk].splice(idx, 1);
+  saveState(); closeModal(); render(); showToast('Essai supprimé');
+}
+
+// ── GROUPS ──
+function getNextGroupId() {
+  if (!state.groups||state.groups.length===0) return 1;
+  return Math.max(...state.groups.map(g=>g.id))+1;
+}
+function createGroup() {
+  const label = prompt('Nom du groupe (ex: Essai A, Frigo 3…) :');
+  if (!label||!label.trim()) return;
+  if (!state.groups) state.groups = [];
+  const colorIdx = state.groups.length % GROUP_COLORS.length;
+  const id = getNextGroupId();
+  state.groups.push({ id, label: label.trim(), colorIdx });
+  saveState(); selectGroup(id); renderGroupSelector(id);
+}
+function selectGroup(id) { currentEdit.groupId = id; renderGroupSelector(id); }
+function renderGroupSelector(selectedId) {
+  if (!state.groups) state.groups = [];
+  const pills = document.getElementById('group-pills');
+  const btnNo = document.getElementById('btn-no-group');
+  btnNo.style.background = selectedId===null ? 'var(--accent)' : '';
+  btnNo.style.color = selectedId===null ? '#fff' : '';
+  btnNo.style.borderColor = selectedId===null ? 'var(--accent)' : '';
+  pills.innerHTML = state.groups.map(g => {
+    const col = GROUP_COLORS[g.colorIdx%GROUP_COLORS.length];
+    const sel = selectedId===g.id;
+    return `<button type="button" onclick="selectGroup(${g.id})" style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:6px;font-size:12px;font-weight:600;font-family:var(--mono);cursor:pointer;border:2px solid ${col.border};background:${sel?col.border:col.bg};color:${sel?'#fff':col.text};transition:all 0.12s;">#${esc(g.label)}</button>`;
+  }).join('');
 }
 
 // ── KEYBOARD ──
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeModal();
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-    if (document.getElementById('overlay').classList.contains('open')) saveEssai();
-  }
+  if (e.key==='Escape') closeModal();
+  if ((e.ctrlKey||e.metaKey)&&e.key==='Enter' && document.getElementById('overlay').classList.contains('open')) saveEssai();
 });
 
 // ── EXPORT / IMPORT ──
 function exportData() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
+  const a = document.createElement('a'); a.href=url;
   const d = new Date();
   a.download = `planning_essais_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('Export téléchargé');
+  a.click(); URL.revokeObjectURL(url); showToast('Export téléchargé');
 }
-
-function importData() {
-  document.getElementById('import-input').click();
-}
-
+function importData() { document.getElementById('import-input').click(); }
 function handleImport(e) {
-  const file = e.target.files[0];
-  if (!file) return;
+  const file = e.target.files[0]; if (!file) return;
   const reader = new FileReader();
   reader.onload = ev => {
     try {
       const data = JSON.parse(ev.target.result);
-      if (!data.weeks || !data.essais) throw new Error('Format invalide');
+      if (!data.weeks||!data.essais) throw new Error('Format invalide');
       if (!confirm(`Importer ${data.weeks.length} semaine(s) ? Les données actuelles seront remplacées.`)) return;
-      state = data;
-      saveState();
-      render();
-      showToast('Import réussi');
-    } catch(err) {
-      alert('Fichier invalide : ' + err.message);
-    }
+      state = migrateState(data); saveState(); render(); showToast('Import réussi');
+    } catch(err) { alert('Fichier invalide : '+err.message); }
     e.target.value = '';
   };
   reader.readAsText(file);
 }
 
-// ── TOAST ──
+// ── TOAST & SYNC ──
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
 }
-
-// ── GROUP HELPERS ──
-function getNextGroupId() {
-  if (!state.groups || state.groups.length === 0) return 1;
-  return Math.max(...state.groups.map(g => g.id)) + 1;
-}
-
-function createGroup() {
-  const label = prompt('Nom du groupe (ex: Essai A, Frigo 3…) :');
-  if (!label || !label.trim()) return;
-  if (!state.groups) state.groups = [];
-  const colorIdx = state.groups.length % GROUP_COLORS.length;
-  const id = getNextGroupId();
-  state.groups.push({ id, label: label.trim(), colorIdx });
-  saveState();
-  selectGroup(id);
-  renderGroupSelector(id);
-}
-
-function selectGroup(id) {
-  currentEdit.groupId = id;
-  renderGroupSelector(id);
-}
-
-function renderGroupSelector(selectedId) {
-  if (!state.groups) state.groups = [];
-  const pills = document.getElementById('group-pills');
-  const btnNo = document.getElementById('btn-no-group');
-  btnNo.style.background = selectedId === null ? 'var(--accent)' : '';
-  btnNo.style.color = selectedId === null ? '#fff' : '';
-  btnNo.style.borderColor = selectedId === null ? 'var(--accent)' : '';
-
-  pills.innerHTML = state.groups.map(g => {
-    const col = GROUP_COLORS[g.colorIdx % GROUP_COLORS.length];
-    const sel = selectedId === g.id;
-    return `<button type="button" onclick="selectGroup(${g.id})" style="
-      display:inline-flex;align-items:center;gap:5px;
-      padding:5px 10px;border-radius:6px;font-size:12px;font-weight:600;
-      font-family:var(--mono);cursor:pointer;border:2px solid ${col.border};
-      background:${sel ? col.border : col.bg};color:${sel ? '#fff' : col.text};
-      transition:all 0.12s;
-    ">#${esc(g.label)}</button>`;
-  }).join('');
-}
-
-// ── SYNC STATUS ──
 function showSyncStatus(s) {
-  const dot = document.getElementById('sync-dot');
-  const label = document.getElementById('sync-label');
-  if (s === 'sync') {
-    dot.style.background = '#E8A020';
-    label.textContent = 'Synchronisation…';
-  } else if (s === 'ok') {
-    dot.style.background = '#1A7A4A';
-    label.textContent = 'Synchronisé';
-    setTimeout(() => { label.textContent = ''; dot.style.background = 'var(--text3)'; }, 3000);
-  } else if (s === 'error') {
-    dot.style.background = '#C0392B';
-    label.textContent = 'Hors ligne (local)';
-  }
+  const dot = document.getElementById('sync-dot'), label = document.getElementById('sync-label');
+  if (s==='sync') { dot.style.background='#E8A020'; label.textContent='Synchronisation…'; }
+  else if (s==='ok') { dot.style.background='#1A7A4A'; label.textContent='Synchronisé'; setTimeout(()=>{label.textContent='';dot.style.background='var(--text3)'},3000); }
+  else { dot.style.background='#C0392B'; label.textContent='Hors ligne (local)'; }
 }
+
+// ── ESCAPE HTML ──
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 // ── PASSWORD ──
-const PASSWORD_KEY = 'foodles_planning_auth';
-const CORRECT_PASSWORD = 'FedyFoodles2026!'; // ← change ce mot de passe ici
-
 function checkPassword() {
   const input = document.getElementById('pw-input').value;
-  if (input === CORRECT_PASSWORD) {
-    sessionStorage.setItem(PASSWORD_KEY, 'ok');
-    document.getElementById('pw-screen').style.display = 'none';
-    init();
-    syncFromRemote();
+  if (input===CORRECT_PASSWORD) {
+    sessionStorage.setItem(PASSWORD_KEY,'ok');
+    document.getElementById('pw-screen').style.display='none';
+    init(); syncFromRemote();
   } else {
     const inp = document.getElementById('pw-input');
-    const err = document.getElementById('pw-error');
     inp.classList.add('error');
-    err.textContent = 'Mot de passe incorrect.';
-    setTimeout(() => inp.classList.remove('error'), 400);
-    inp.value = '';
-    inp.focus();
+    document.getElementById('pw-error').textContent='Mot de passe incorrect.';
+    setTimeout(()=>inp.classList.remove('error'),400);
+    inp.value=''; inp.focus();
   }
 }
-
 function togglePwVisibility() {
   const inp = document.getElementById('pw-input');
-  inp.type = inp.type === 'password' ? 'text' : 'password';
+  inp.type = inp.type==='password'?'text':'password';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Si déjà authentifié dans cette session, passe directement
-  if (sessionStorage.getItem(PASSWORD_KEY) === 'ok') {
-    document.getElementById('pw-screen').style.display = 'none';
-    init();
-    syncFromRemote();
+  if (sessionStorage.getItem(PASSWORD_KEY)==='ok') {
+    document.getElementById('pw-screen').style.display='none';
+    init(); syncFromRemote();
   }
-  // Entrée clavier sur le champ mot de passe
-  document.getElementById('pw-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') checkPassword();
-  });
+  document.getElementById('pw-input').addEventListener('keydown', e => { if(e.key==='Enter') checkPassword(); });
   document.getElementById('pw-input').focus();
 });
-
-// ── START ──
-// (init et syncFromRemote sont appelés après authentification)
 </script>
 </body>
 </html>
