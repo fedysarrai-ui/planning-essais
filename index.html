@@ -146,6 +146,10 @@
   .add-note-btn:hover { border-color: #E8A020; color: #A06800; background: #FFFBEB; }
   .add-note-btn svg { width: 11px; height: 11px; flex-shrink: 0; }
 
+  /* DROP INDICATOR */
+  .drop-indicator { height: 3px; background: var(--accent); border-radius: 2px; margin: 2px 4px; transition: none; }
+  .essais-area.drag-over-empty { background: var(--accent-light); border-radius: 4px; outline: 2px dashed var(--accent-mid); outline-offset: -2px; }
+
   /* PRINT */
   @media print { .nav-actions,.toolbar,.add-btn,.week-delete-btn{display:none!important} .week-block{break-inside:avoid;box-shadow:none} body{background:white} }
 </style>
@@ -362,14 +366,41 @@ function parseSlot(sk) { const [dk, half] = sk.split('|'); return { dateKey: dk,
 function migrateState(s) {
   if (!s.essais) return s;
   const newEssais = {};
+
+  // Pass 1: handle plain date keys (old format) -> put in |am slot
   for (const [k, v] of Object.entries(s.essais)) {
-    if (k.includes('|')) {
-      newEssais[k] = v; // already new format
-    } else {
-      // migrate: put all existing essais in "am" slot
-      newEssais[slotKey(k, 'am')] = v;
+    if (!k.includes('|')) {
+      const amKey = slotKey(k, 'am');
+      if (!newEssais[amKey]) newEssais[amKey] = [];
+      for (const e of (v || [])) {
+        if (e) newEssais[amKey].push({ type: 'essai', ...e });
+      }
     }
   }
+
+  // Pass 2: handle |am / |pm slots — add type:'essai' if missing
+  for (const [k, v] of Object.entries(s.essais)) {
+    if (k.includes('|') && !k.startsWith('note:')) {
+      if (!newEssais[k]) newEssais[k] = [];
+      for (const e of (v || [])) {
+        if (!e) continue;
+        if (!e.type) newEssais[k].push({ type: 'essai', ...e });
+        else newEssais[k].push(e); // already unified
+      }
+    }
+  }
+
+  // Pass 3: merge old separate note: keys into base slot
+  for (const [k, v] of Object.entries(s.essais)) {
+    if (k.startsWith('note:')) {
+      const baseKey = k.replace('note:', '');
+      if (!newEssais[baseKey]) newEssais[baseKey] = [];
+      for (const n of (v || [])) {
+        if (n) newEssais[baseKey].push({ type: 'note', text: n.text, createdAt: n.createdAt, updatedAt: n.updatedAt });
+      }
+    }
+  }
+
   s.essais = newEssais;
   return s;
 }
@@ -437,7 +468,8 @@ function render() {
     let weekCount = 0;
     for (let i = 0; i < 5; i++) {
       const dk = fmtKey(addDays(monKey, i));
-      weekCount += (state.essais[slotKey(dk,'am')]||[]).length + (state.essais[slotKey(dk,'pm')]||[]).length;
+      weekCount += (state.essais[slotKey(dk,'am')]||[]).filter(e=>e&&e.type==='essai').length
+                 + (state.essais[slotKey(dk,'pm')]||[]).filter(e=>e&&e.type==='essai').length;
     }
 
     const block = document.createElement('div');
@@ -499,51 +531,56 @@ function render() {
 }
 
 function renderSlot(sk) {
+  // Unified list: each item has type:'essai' or type:'note'
   const list = (state.essais[sk] || []).filter(e => e !== null && e !== undefined);
   state.essais[sk] = list;
-  const nsk = 'note:' + sk;
-  const notes = (state.essais[nsk] || []).filter(n => n !== null && n !== undefined);
-  state.essais[nsk] = notes;
 
-  const chips = list.map((e, ei) => {
-    const grp = e.groupId ? (state.groups||[]).find(g => g.id===e.groupId) : null;
-    const col = grp ? GROUP_COLORS[grp.colorIdx % GROUP_COLORS.length] : null;
-    const chipStyle = col ? `border-left-color:${col.border};background:${col.bg};` : '';
-    const badgeStyle = col ? `background:${col.border};color:#fff;` : '';
-    const badge = grp ? `<span class="group-badge" style="${badgeStyle}">#${esc(grp.label)}</span>` : '<div class="essai-chip-dot"></div>';
-    return `<div class="essai-chip${grp?' has-group':''}" 
-      draggable="true"
-      ondragstart="onChipDragStart(event,'${sk}',${ei})"
-      ondragend="onChipDragEnd(event)"
-      onclick="onChipClick(event,'${sk}',${ei})"
-      title="${esc(e.title||'Sans titre')}" 
-      style="${chipStyle}">
-      ${badge}
-      <span class="essai-chip-title${!e.title?' essai-chip-empty':''}">${e.title?esc(e.title):'Sans titre'}</span>
-    </div>`;
+  const chips = list.map((item, i) => {
+    if (item.type === 'note') {
+      return `<div class="note-chip"
+        draggable="true"
+        ondragstart="onChipDragStart(event,'${sk}',${i},'note')"
+        ondragend="onChipDragEnd(event)"
+        onclick="onChipClick(event,'${sk}',${i},'note')"
+        title="${esc(item.text||'')}">
+        <span class="note-chip-icon">✎</span>
+        <span class="note-chip-title">${item.text ? esc(item.text) : '<em>Note vide</em>'}</span>
+      </div>`;
+    } else {
+      const grp = item.groupId ? (state.groups||[]).find(g => g.id===item.groupId) : null;
+      const col = grp ? GROUP_COLORS[grp.colorIdx % GROUP_COLORS.length] : null;
+      const chipStyle = col ? `border-left-color:${col.border};background:${col.bg};` : '';
+      const badgeStyle = col ? `background:${col.border};color:#fff;` : '';
+      const badge = grp ? `<span class="group-badge" style="${badgeStyle}">#${esc(grp.label)}</span>` : '<div class="essai-chip-dot"></div>';
+      return `<div class="essai-chip${grp?' has-group':''}"
+        draggable="true"
+        ondragstart="onChipDragStart(event,'${sk}',${i},'essai')"
+        ondragend="onChipDragEnd(event)"
+        onclick="onChipClick(event,'${sk}',${i},'essai')"
+        title="${esc(item.title||'Sans titre')}"
+        style="${chipStyle}">
+        ${badge}
+        <span class="essai-chip-title${!item.title?' essai-chip-empty':''}">${item.title?esc(item.title):'Sans titre'}</span>
+      </div>`;
+    }
   }).join('');
-
-  const noteChips = notes.map((n, ni) => `
-    <div class="note-chip" onclick="openNote('${nsk}',${ni})" title="${esc(n.text||'')}">
-      <span class="note-chip-icon">✎</span>
-      <span class="note-chip-title">${n.text ? esc(n.text) : '<em>Note vide</em>'}</span>
-    </div>`).join('');
 
   return `<div class="essais-area" data-slot="${sk}"
     ondragover="onZoneDragOver(event)"
     ondragleave="onZoneDragLeave(event)"
     ondrop="onZoneDrop(event,'${sk}')"
-  >${chips}${noteChips}</div>`;
+  >${chips}</div>`;
 }
 
-// ── DRAG & DROP ──
-let dragSrc = null;
+// ── DRAG & DROP (avec réordonnancement) ──
+let dragSrc = null; // { sk, idx, type }
 let isDragging = false;
 
 function setupDragDrop() {}
+function initDragDrop() {}
 
-function onChipDragStart(e, sk, idx) {
-  dragSrc = { sk, idx };
+function onChipDragStart(e, sk, idx, type) {
+  dragSrc = { sk, idx, type };
   isDragging = true;
   e.dataTransfer.effectAllowed = 'move';
   e.dataTransfer.setData('text/plain', sk + '|' + idx);
@@ -553,45 +590,94 @@ function onChipDragStart(e, sk, idx) {
 function onChipDragEnd(e) {
   isDragging = false;
   if (e.target) e.target.style.opacity = '';
-  document.querySelectorAll('.essais-area').forEach(z => z.classList.remove('drag-over'));
+  document.querySelectorAll('.essais-area').forEach(z => {
+    z.classList.remove('drag-over', 'drag-over-empty');
+  });
+  document.querySelectorAll('.drop-indicator').forEach(d => d.remove());
 }
 
-function onChipClick(e, sk, idx) {
+function onChipClick(e, sk, idx, type) {
   if (isDragging) return;
-  openEdit(sk, idx);
+  if (type === 'note') openNoteByIndex(sk, idx);
+  else openEdit(sk, idx);
+}
+
+function getDropIndex(zone, clientY) {
+  // Trouve l'index d'insertion en fonction de la position Y du curseur
+  const chips = [...zone.querySelectorAll('.essai-chip, .note-chip')];
+  for (let i = 0; i < chips.length; i++) {
+    const rect = chips[i].getBoundingClientRect();
+    if (clientY < rect.top + rect.height / 2) return i;
+  }
+  return chips.length;
 }
 
 function onZoneDragOver(e) {
   e.preventDefault();
   e.dataTransfer.dropEffect = 'move';
   const zone = e.currentTarget;
-  document.querySelectorAll('.essais-area').forEach(z => z.classList.remove('drag-over'));
-  if (dragSrc && zone.dataset.slot !== dragSrc.sk) zone.classList.add('drag-over');
+  // Clear all indicators
+  document.querySelectorAll('.essais-area').forEach(z => z.classList.remove('drag-over', 'drag-over-empty'));
+  document.querySelectorAll('.drop-indicator').forEach(d => d.remove());
+
+  if (!dragSrc) return;
+
+  const chips = [...zone.querySelectorAll('.essai-chip, .note-chip')];
+  if (chips.length === 0) {
+    // Zone vide
+    zone.classList.add('drag-over-empty');
+    return;
+  }
+
+  // Show insert indicator
+  const insertIdx = getDropIndex(zone, e.clientY);
+  const indicator = document.createElement('div');
+  indicator.className = 'drop-indicator';
+  if (insertIdx >= chips.length) {
+    zone.appendChild(indicator);
+  } else {
+    zone.insertBefore(indicator, chips[insertIdx]);
+  }
 }
 
 function onZoneDragLeave(e) {
-  e.currentTarget.classList.remove('drag-over');
+  if (!e.currentTarget.contains(e.relatedTarget)) {
+    e.currentTarget.classList.remove('drag-over', 'drag-over-empty');
+    document.querySelectorAll('.drop-indicator').forEach(d => d.remove());
+  }
 }
 
 function onZoneDrop(e, targetSk) {
   e.preventDefault();
-  e.currentTarget.classList.remove('drag-over');
-  if (!dragSrc || dragSrc.sk === targetSk) return;
+  document.querySelectorAll('.essais-area').forEach(z => z.classList.remove('drag-over', 'drag-over-empty'));
+  document.querySelectorAll('.drop-indicator').forEach(d => d.remove());
+  if (!dragSrc) return;
 
-  const srcList = JSON.parse(JSON.stringify(state.essais[dragSrc.sk] || []));
-  const [moved] = srcList.splice(dragSrc.idx, 1);
-  state.essais[dragSrc.sk] = srcList;
-  if (!state.essais[targetSk]) state.essais[targetSk] = [];
-  state.essais[targetSk] = JSON.parse(JSON.stringify(state.essais[targetSk]));
-  state.essais[targetSk].push(moved);
+  const { sk: srcSk, idx: srcIdx, type } = dragSrc;
   dragSrc = null;
+
+  // Compute insert index based on drop position
+  const zone = e.currentTarget;
+  let insertIdx = getDropIndex(zone, e.clientY);
+
+  // Get source and target lists (notes use 'note:' prefix)
+  const srcList = JSON.parse(JSON.stringify(state.essais[srcSk] || []));
+  const [moved] = srcList.splice(srcIdx, 1);
+  state.essais[srcSk] = srcList;
+
+  if (!state.essais[targetSk]) state.essais[targetSk] = [];
+  const tgtList = JSON.parse(JSON.stringify(state.essais[targetSk]));
+
+  // Adjust insert index if moving within same list (item was removed)
+  if (srcSk === targetSk && srcIdx < insertIdx) insertIdx--;
+  insertIdx = Math.max(0, Math.min(insertIdx, tgtList.length));
+  tgtList.splice(insertIdx, 0, moved);
+  state.essais[targetSk] = tgtList;
+
   saveState();
   render();
-  showToast('Essai déplacé');
+  showToast('Déplacé');
 }
-
-function setupDragDrop() {}
-function initDragDrop() {}
 
 // ── WEEK ACTIONS ──
 function addWeek() {
@@ -637,23 +723,43 @@ function openNew(sk) {
 }
 
 function openEdit(sk, idx) {
-  const e = (state.essais[sk]||[])[idx];
-  if (!e) return;
-  currentEdit = { sk, idx, groupId: e.groupId||null };
+  const item = (state.essais[sk]||[])[idx];
+  if (!item || item.type !== 'essai') return;
+  currentEdit = { sk, idx, groupId: item.groupId||null };
   currentNote = null;
   const { dateKey, half } = parseSlot(sk);
   document.getElementById('modal-date').textContent = fmtFull(dateKey) + ' — ' + (half==='am'?'Matin':'Après-midi');
-  document.getElementById('inp-title').value = e.title||'';
-  document.getElementById('inp-desc').value = e.desc||'';
+  document.getElementById('inp-title').value = item.title||'';
+  document.getElementById('inp-desc').value = item.desc||'';
   document.getElementById('inp-note-inline').value = '';
   document.getElementById('btn-del').style.display = '';
   document.getElementById('note-btn-inline-del').style.display = 'none';
   document.getElementById('btn-dup').style.display = '';
-  renderGroupSelector(e.groupId||null);
+  renderGroupSelector(item.groupId||null);
   currentTab = 'essai';
   switchTab('essai');
   document.getElementById('overlay').classList.add('open');
   setTimeout(() => document.getElementById('inp-title').focus(), 80);
+}
+
+function openNoteByIndex(sk, idx) {
+  const item = (state.essais[sk]||[])[idx];
+  if (!item || item.type !== 'note') return;
+  currentNote = { sk, idx };
+  currentEdit = { sk, idx: null, groupId: null };
+  const { dateKey, half } = parseSlot(sk);
+  document.getElementById('modal-date').textContent = fmtFull(dateKey) + ' — ' + (half==='am'?'Matin':'Après-midi');
+  document.getElementById('inp-title').value = '';
+  document.getElementById('inp-desc').value = '';
+  document.getElementById('inp-note-inline').value = item.text||'';
+  document.getElementById('btn-del').style.display = 'none';
+  document.getElementById('note-btn-inline-del').style.display = '';
+  document.getElementById('btn-dup').style.display = 'none';
+  renderGroupSelector(null);
+  currentTab = 'note';
+  switchTab('note');
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(() => document.getElementById('inp-note-inline').focus(), 80);
 }
 
 function closeModal() { document.getElementById('overlay').classList.remove('open'); currentEdit = null; }
@@ -665,7 +771,7 @@ function saveEssai() {
   const desc = document.getElementById('inp-desc').value.trim();
   const { sk, idx, groupId } = currentEdit;
   if (!state.essais[sk]) state.essais[sk] = [];
-  const entry = { title, desc, groupId: groupId||null };
+  const entry = { type: 'essai', title, desc, groupId: groupId||null };
   if (idx===null) { entry.createdAt = new Date().toISOString(); state.essais[sk].push(entry); }
   else { state.essais[sk][idx] = { ...state.essais[sk][idx], ...entry, updatedAt: new Date().toISOString() }; }
   saveState(); closeModal(); render();
@@ -676,7 +782,7 @@ function duplicateEssai() {
   if (!currentEdit || currentEdit.idx === null) return;
   const { sk, idx } = currentEdit;
   const original = state.essais[sk][idx];
-  const copy = { ...original, title: original.title + ' (copie)', createdAt: new Date().toISOString(), updatedAt: undefined };
+  const copy = { ...original, title: (original.title||'') + ' (copie)', createdAt: new Date().toISOString(), updatedAt: undefined };
   state.essais[sk].push(copy);
   saveState(); closeModal(); render();
   showToast('Essai dupliqué — glisse-le où tu veux !');
@@ -731,8 +837,7 @@ function switchTab(tab) {
   currentTab = tab;
   // Si on bascule sur l'onglet Note et qu'on vient d'openNew, initialiser currentNote
   if (tab === 'note' && currentEdit && !currentNote) {
-    const nsk = 'note:' + currentEdit.sk;
-    currentNote = { nsk, idx: null };
+    currentNote = { sk: currentEdit.sk, idx: null };
   }
   // Tab buttons
   const tE = document.getElementById('tab-essai');
@@ -754,25 +859,9 @@ function switchTab(tab) {
 // ── NOTES ──
 let currentNote = null; // { nsk, idx }
 
-function openNote(nsk, idx) {
-  // Called from chip click — open modal on note tab
-  const rawSk = nsk.replace('note:', '');
-  const { dateKey, half } = parseSlot(rawSk);
-  currentNote = { nsk, idx };
-  currentEdit = { sk: rawSk, idx: null, groupId: null }; // so closeModal works
-  document.getElementById('modal-date').textContent = fmtFull(dateKey) + ' — ' + (half==='am'?'Matin':'Après-midi');
-  document.getElementById('inp-title').value = '';
-  document.getElementById('inp-desc').value = '';
-  const notes = state.essais[nsk] || [];
-  document.getElementById('inp-note-inline').value = idx !== null ? (notes[idx]?.text || '') : '';
-  document.getElementById('btn-del').style.display = 'none';
-  document.getElementById('note-btn-inline-del').style.display = idx !== null ? '' : 'none';
-  document.getElementById('btn-dup').style.display = 'none';
-  renderGroupSelector(null);
-  currentTab = 'note';
-  switchTab('note');
-  document.getElementById('overlay').classList.add('open');
-  setTimeout(() => document.getElementById('inp-note-inline').focus(), 80);
+function openNote(sk, idx) {
+  // Redirect to unified handler
+  openNoteByIndex(sk, idx);
 }
 
 function saveUnified() {
@@ -786,12 +875,12 @@ function saveUnified() {
 function saveNoteInline() {
   if (!currentNote) return;
   const text = document.getElementById('inp-note-inline').value.trim();
-  const { nsk, idx } = currentNote;
-  if (!state.essais[nsk]) state.essais[nsk] = [];
+  const { sk, idx } = currentNote;
+  if (!state.essais[sk]) state.essais[sk] = [];
   if (idx === null) {
-    state.essais[nsk].push({ text, createdAt: new Date().toISOString() });
+    state.essais[sk].push({ type: 'note', text, createdAt: new Date().toISOString() });
   } else {
-    state.essais[nsk][idx] = { text, updatedAt: new Date().toISOString() };
+    state.essais[sk][idx] = { type: 'note', text, updatedAt: new Date().toISOString() };
   }
   saveState(); closeModal(); render();
   showToast(idx === null ? 'Note ajoutée' : 'Note mise à jour');
@@ -800,8 +889,8 @@ function saveNoteInline() {
 function deleteNoteInline() {
   if (!currentNote || currentNote.idx === null) return;
   if (!confirm('Supprimer cette note ?')) return;
-  const { nsk, idx } = currentNote;
-  state.essais[nsk].splice(idx, 1);
+  const { sk, idx } = currentNote;
+  state.essais[sk].splice(idx, 1);
   saveState(); closeModal(); render();
   showToast('Note supprimée');
 }
