@@ -68,8 +68,9 @@
 
   /* HALF-DAY SECTIONS */
   .day-body { display: flex; flex-direction: column; flex: 1; }
-  .half-section { flex: 1; display: flex; flex-direction: column; border-bottom: 2px solid var(--border2); }
-  .half-section:last-child { border-bottom: none; }
+  .half-section { display: flex; flex-direction: column; border-bottom: 2px solid var(--border2); }
+  .half-section:first-child { min-height: 140px; }
+  .half-section:last-child { border-bottom: none; flex: 1; }
   .half-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text2); padding: 5px 8px 2px; }
   .essais-area { flex: 1; padding: 3px 6px 4px; display: flex; flex-direction: column; gap: 4px; min-height: 48px; }
 
@@ -140,7 +141,7 @@
   .note-chip { background: #FFFBEB; border: 1px solid #F0D080; border-left: 3px solid #E8A020; border-radius: var(--radius-sm); padding: 6px 8px; cursor: pointer; display: flex; align-items: flex-start; gap: 5px; transition: all 0.12s; user-select: none; }
   .note-chip:hover { background: #FFF5CC; box-shadow: 0 2px 8px rgba(232,160,32,0.15); }
   .note-chip-icon { font-size: 11px; flex-shrink: 0; margin-top: 1px; color: #E8A020; }
-  .note-chip-title { font-size: 11px; font-weight: 400; color: #7A5800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; font-style: italic; }
+  .note-chip-title { font-size: 11px; font-weight: 400; color: #7A5800; flex: 1; min-width: 0; font-style: italic; line-height: 1.5; word-break: break-word; }
   .add-note-btn { display: flex; align-items: center; gap: 5px; padding: 5px 8px; margin: 0 6px 6px; background: none; border: 1px dashed #F0D080; border-radius: var(--radius-sm); color: #C89010; font-size: 11px; width: calc(100% - 12px); transition: all 0.15s; }
   .add-note-btn:hover { border-color: #E8A020; color: #A06800; background: #FFFBEB; }
   .add-note-btn svg { width: 11px; height: 11px; flex-shrink: 0; }
