@@ -83,7 +83,7 @@
   .essai-chip.dragging { opacity: 0.4; cursor: grabbing; }
   .essai-chip.has-group { border-left-width: 3px; }
   .essai-chip-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-mid); margin-top: 4px; flex-shrink: 0; }
-  .essai-chip-title { font-size: 11px; font-weight: 500; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+  .essai-chip-title { font-size: 11px; font-weight: 500; color: var(--text); flex: 1; min-width: 0; line-height: 1.5; word-break: break-word; }
   .essai-chip-empty { color: var(--text3); font-style: italic; }
   .group-badge { font-size: 10px; font-weight: 700; font-family: var(--mono); padding: 2px 5px; border-radius: 4px; flex-shrink: 0; letter-spacing: 0.02em; }
 
@@ -145,6 +145,15 @@
   .add-note-btn { display: flex; align-items: center; gap: 5px; padding: 5px 8px; margin: 0 6px 6px; background: none; border: 1px dashed #F0D080; border-radius: var(--radius-sm); color: #C89010; font-size: 11px; width: calc(100% - 12px); transition: all 0.15s; }
   .add-note-btn:hover { border-color: #E8A020; color: #A06800; background: #FFFBEB; }
   .add-note-btn svg { width: 11px; height: 11px; flex-shrink: 0; }
+
+  /* VALIDATED */
+  .essai-chip.validated { opacity: 0.7; }
+  .essai-chip.validated .essai-chip-title { text-decoration: line-through; color: var(--text2); }
+  .essai-chip.validated::after { content: '✓'; position: absolute; top: 5px; right: 7px; font-size: 11px; font-weight: 700; color: var(--success, #1A7A4A); }
+  .essai-chip { position: relative; }
+  .note-chip.validated { background: #E8F5EE; border-color: #1A7A4A; border-left-color: #1A7A4A; }
+  .note-chip.validated .note-chip-title { color: #0F5433; }
+  .note-chip.validated .note-chip-icon { color: #1A7A4A; }
 
   /* DROP INDICATOR */
   .drop-indicator { height: 3px; background: var(--accent); border-radius: 2px; margin: 2px 4px; transition: none; }
@@ -266,6 +275,10 @@
       <button class="btn btn-danger" id="note-btn-inline-del" onclick="deleteNoteInline()" style="display:none;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
         Supprimer
+      </button>
+      <button class="btn" id="btn-validate" onclick="toggleValidateFromModal()" style="display:none;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <span id="btn-validate-label">Valider</span>
       </button>
       <button class="btn" id="btn-dup" onclick="duplicateEssai()" style="display:none;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -537,13 +550,16 @@ function renderSlot(sk) {
 
   const chips = list.map((item, i) => {
     if (item.type === 'note') {
-      return `<div class="note-chip"
+      const validCls = item.validated ? ' validated' : '';
+      const icon = item.validated ? '✓' : '✎';
+      const iconStyle = item.validated ? 'color:#1A7A4A;font-weight:700;' : '';
+      return `<div class="note-chip${validCls}"
         draggable="true"
         ondragstart="onChipDragStart(event,'${sk}',${i},'note')"
         ondragend="onChipDragEnd(event)"
         onclick="onChipClick(event,'${sk}',${i},'note')"
         title="${esc(item.text||'')}">
-        <span class="note-chip-icon">✎</span>
+        <span class="note-chip-icon" style="${iconStyle}">${icon}</span>
         <span class="note-chip-title">${item.text ? esc(item.text) : '<em>Note vide</em>'}</span>
       </div>`;
     } else {
@@ -552,7 +568,8 @@ function renderSlot(sk) {
       const chipStyle = col ? `border-left-color:${col.border};background:${col.bg};` : '';
       const badgeStyle = col ? `background:${col.border};color:#fff;` : '';
       const badge = grp ? `<span class="group-badge" style="${badgeStyle}">#${esc(grp.label)}</span>` : '<div class="essai-chip-dot"></div>';
-      return `<div class="essai-chip${grp?' has-group':''}"
+      const validCls = item.validated ? ' validated' : '';
+      return `<div class="essai-chip${grp?' has-group':''}${validCls}"
         draggable="true"
         ondragstart="onChipDragStart(event,'${sk}',${i},'essai')"
         ondragend="onChipDragEnd(event)"
@@ -715,6 +732,7 @@ function openNew(sk) {
   document.getElementById('btn-del').style.display = 'none';
   document.getElementById('note-btn-inline-del').style.display = 'none';
   document.getElementById('btn-dup').style.display = 'none';
+  document.getElementById('btn-validate').style.display = 'none';
   renderGroupSelector(null);
   currentTab = 'essai';
   switchTab('essai');
@@ -735,6 +753,11 @@ function openEdit(sk, idx) {
   document.getElementById('btn-del').style.display = '';
   document.getElementById('note-btn-inline-del').style.display = 'none';
   document.getElementById('btn-dup').style.display = '';
+  document.getElementById('btn-validate').style.display = '';
+  document.getElementById('btn-validate-label').textContent = item.validated ? 'Dévalider' : 'Valider';
+  document.getElementById('btn-validate').style.background = item.validated ? '#E8F5EE' : '';
+  document.getElementById('btn-validate').style.color = item.validated ? '#1A7A4A' : '';
+  document.getElementById('btn-validate').style.borderColor = item.validated ? '#1A7A4A' : '';
   renderGroupSelector(item.groupId||null);
   currentTab = 'essai';
   switchTab('essai');
@@ -755,6 +778,11 @@ function openNoteByIndex(sk, idx) {
   document.getElementById('btn-del').style.display = 'none';
   document.getElementById('note-btn-inline-del').style.display = '';
   document.getElementById('btn-dup').style.display = 'none';
+  document.getElementById('btn-validate').style.display = '';
+  document.getElementById('btn-validate-label').textContent = item.validated ? 'Dévalider' : 'Valider';
+  document.getElementById('btn-validate').style.background = item.validated ? '#E8F5EE' : '';
+  document.getElementById('btn-validate').style.color = item.validated ? '#1A7A4A' : '';
+  document.getElementById('btn-validate').style.borderColor = item.validated ? '#1A7A4A' : '';
   renderGroupSelector(null);
   currentTab = 'note';
   switchTab('note');
@@ -880,7 +908,9 @@ function saveNoteInline() {
   if (idx === null) {
     state.essais[sk].push({ type: 'note', text, createdAt: new Date().toISOString() });
   } else {
-    state.essais[sk][idx] = { type: 'note', text, updatedAt: new Date().toISOString() };
+    // Conserver validated et autres champs existants
+    const existing = state.essais[sk][idx] || {};
+    state.essais[sk][idx] = { ...existing, type: 'note', text, updatedAt: new Date().toISOString() };
   }
   saveState(); closeModal(); render();
   showToast(idx === null ? 'Note ajoutée' : 'Note mise à jour');
@@ -925,6 +955,49 @@ function deleteNote() {
   state.essais[nsk].splice(idx, 1);
   saveState(); closeNoteModal(); render();
   showToast('Note supprimée');
+}
+
+// ── VALIDATE ──
+function toggleValidate(sk, idx) {
+  const item = (state.essais[sk]||[])[idx];
+  if (!item) return;
+  item.validated = !item.validated;
+  saveState();
+  render();
+}
+
+function toggleValidateFromModal() {
+  // Determine which item to validate: note takes priority if currentNote has a valid idx
+  let sk, idx;
+  if (currentNote && currentNote.idx !== null && currentNote.idx !== undefined) {
+    sk = currentNote.sk;
+    idx = currentNote.idx;
+  } else if (currentEdit && currentEdit.idx !== null && currentEdit.idx !== undefined) {
+    sk = currentEdit.sk;
+    idx = currentEdit.idx;
+  } else {
+    return;
+  }
+
+  const list = state.essais[sk] || [];
+  const item = list[idx];
+  if (!item) return;
+  item.validated = !item.validated;
+
+  // Update button appearance without re-rendering modal
+  const btn = document.getElementById('btn-validate');
+  document.getElementById('btn-validate-label').textContent = item.validated ? 'Dévalider' : 'Valider';
+  btn.style.background = item.validated ? '#E8F5EE' : '';
+  btn.style.color = item.validated ? '#1A7A4A' : '';
+  btn.style.borderColor = item.validated ? '#1A7A4A' : '';
+
+  saveState();
+  // Re-render background only (don't close modal)
+  const planner = document.getElementById('planner');
+  const scrollY = window.scrollY;
+  render();
+  window.scrollTo(0, scrollY);
+  showToast(item.validated ? '✓ Validé' : 'Validation retirée');
 }
 
 // ── KEYBOARD ──
